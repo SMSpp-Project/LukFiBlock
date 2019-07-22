@@ -1,0 +1,57 @@
+##############################################################################
+################################ makefile-c ##################################
+##############################################################################
+#									     #
+#   complete makefile of SimpleMILPBlock                                     #
+#									     #
+#   The makefile defines internally all external libraries (comprised the    #
+#   SMS++ one) required by SimpleMILPBlock. Accordingly, all necessary OBJ,  #
+#   H, -I directives, external libraries + -L<libdirs> are added to the      #
+#   corresponding LukFi* macros.                                             #
+#                                                                            #
+#   Input:  $(CC)       = compiler command                                   #
+#           $(SW)       = compiler options                                   #
+#           $(LukFiSDR) = the directory where LukFiBlock source is           #
+#                                                                            #
+#   Output: $(LukFiOBJ) = the final object(s) / library                      #
+#           $(LukFiLIB) = external libraries + -L<libdirs>                   #
+#           $(LukFiH)   = the .h files to include for SimpleMILPBlock        #
+#           $(LukFiINC) = the -I$( SimpleMILPBlock directory )               #
+#                                                                            #
+#                                VERSION 1.00                                #
+#                               20 - 07 - 2018                               #
+#                                                                            #
+#                              Antonio Frangioni                             #
+#                          Operations Research Group                         #
+#                         Dipartimento di Informatica                        #
+#                             Universita' di Pisa                            #
+#									     #
+##############################################################################
+
+# define & include the necessary modules- - - - - - - - - - - - - - - - - - -
+# if a module is not used in the current configuration, just comment out the
+# corresponding include line
+# each module outputs some macros to be used here:
+# *OBJ is the final object/library
+# *H   is the list of all include files
+# *INC is the -I<include directories>
+
+# define input macros for SMS++ complete makefile, then include it
+SMS++SDR = $(LukFiSDR)../SMS++/
+include $(SMS++SDR)makefile-c
+
+# include the makefile requiring all external modules in input
+include $(LukFiSDR)/makefile
+
+# macroes to be exported- - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# append external -I directives to MILPBINC, MILPBOBJ and MILPBH as defined
+# by the makefile, thus the := assignment has to be used (use GNU make)
+LukFiOBJ := $(LukFiOBJ) $(SMS++OBJ)
+LukFiH := $(LukFiH) $(SMS++H)
+LukFiINC := $(SMS++INC) $(LukFiINC)
+
+# external libreries for LukFiBlock
+LukFiLIB = $(SMS++LIB)
+
+############################ End of makefile #################################

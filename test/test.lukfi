@@ -1,0 +1,6 @@
+# parameters of the function 
+3	which function (1, ..., 29)
+2	n. of variables for functions 26, 27 and 28
+2	n. of components for function 28 (MaxQR)
+1	seed for function 28 (MaxQR)
+# the end
