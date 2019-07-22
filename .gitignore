@@ -4,3 +4,6 @@ LukFiFunction.o
 test/LukFiMain
 test/main.o
 test/LukFiMain
+.settings/language.settings.xml
+.project
+.cproject

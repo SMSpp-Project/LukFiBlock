@@ -187,7 +187,7 @@ void LukFiBlock::deserialize( netCDF::NcGroup & group )
  netCDF::NcDim nr_cmp = group.getDim( "nr_cmp" );
  NrCmp = nr_cmp.getSize();
 
- netCDF::NcDim vl_seed = group.getDim( "nr_cmp" );
+ netCDF::NcDim vl_seed = group.getDim( "seed" );
  seed = vl_seed.getSize();
 
  x.resize( n );
