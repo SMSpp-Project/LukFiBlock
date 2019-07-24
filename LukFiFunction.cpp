@@ -1176,7 +1176,7 @@ Function::FunctionValue LukFiFunction::get_linearization_constant(
 
  double value_k = FiVal;
  for( int i = 0 ; i < v_vars.size() ; i++ )
-  value_k +=  v_vars[ i ]->get_value() * SubG[ i ];
+  value_k -=  v_vars[ i ]->get_value() * SubG[ i ];
 
  return( value_k );
  } // end( LukFiFunction::get_linearization_coefficients() ) - - - - - - - - -
