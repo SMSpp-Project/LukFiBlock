@@ -200,17 +200,19 @@ class LukFiFunction : public C05Function {
  *  @{ */
 
 /*--------------------------------------------------------------------------*/
-  /// constructor of LukFiFunction: does nothing
+  /// constructor of LukFiFunction:
+  /** constructor of LukFiFunction. It accepts the name of the function
+      and the pointer to the vector of variables. */
 
- LukFiFunction( v_col_var && vars , const bool ordered = false );
+ LukFiFunction( int name , v_col_var && vars ,
+		 const bool ordered = false );
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
  /// destructor of LukFiFunction: delete the allocated memory.
- /** destructor of LukFiFunction. It deletes delete the global pool and the
-     LagMatrix which is used to change the Lagrangian costs. */
+ /** destructor of LukFiFunction. It deletes delete the subgradient. */
 
- virtual ~LukFiFunction( void ) { };
+ virtual ~LukFiFunction( void ) { SubG.clear(); };
 
 /*--------------------------------------------------------------------------*/
 
@@ -221,13 +223,6 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 /** @name Other initializations
  *  @{ */
-
-  /// set the whole (empty) set of parameters in one blow
-
-  virtual void set_ComputeConfig( ComputeConfig *scfg = nullptr )
-   override final;
-
-/*--------------------------------------------------------------------------*/
 
  /// set a given integer (int) numerical parameter
  /** Set a given integer (int) numerical parameter. The method sets the maximum
@@ -309,38 +304,19 @@ class LukFiFunction : public C05Function {
    c_Vec_Index & indices = {} , c_Index start = 0 ,
    c_Index end = Inf<Index>() ) override final {
 
-  throw( std::logic_error( "sparsify is not allowed" ) ); // ????
+  throw( std::logic_error( "sparsify is not allowed" ) );
   }
 
 /*--------------------------------------------------------------------------*/
 
  virtual FunctionValue get_linearization_constant(
-		 const LinearizationName name = Inf<Index>() ) override final {
-
-  return( 0 ); // ????
-  }
+		 const LinearizationName name = Inf<Index>() ) override final;
 
 /**@} ----------------------------------------------------------------------*/
 /*------------------- METHODS FOR HANDLING THE PARAMETERS ------------------*/
 /*--------------------------------------------------------------------------*/
 /** @name Handling the parameters of the LukFiFunction
  *  @{ */
-
- ///< get the whole (empty) set of parameters in one blow
- /** Although a LukFiFunction formally has a lot of parameters, in fact it
-  * "listens to no-one"; hence, the implementation of get_ComputeConfig() is
-  * quite a trivial one.
-  *
-  * ComputeConfig is assumed to be of the SimpleConfig_p_p type wherein
-  * the field f_value is a Configuration pointers pair. The first element
-  * of that pair is a BlockSolverConfig and the second one is a
-  * BlockConfig. */
-
- virtual ComputeConfig * get_ComputeConfig( bool all = false ,
-					    ComputeConfig * ocfg = nullptr )
-  const override final;
-
-/*--------------------------------------------------------------------------*/
 
  virtual int get_int_par( const idx_type par ) const override;
 
@@ -426,6 +402,7 @@ class LukFiFunction : public C05Function {
  dblVR1 aQR;
  dblVR2 cQR;
 
+ std::vector<FunctionValue> SubG;
  double FiVal;
 
 /*--------------------------------------------------------------------------*/

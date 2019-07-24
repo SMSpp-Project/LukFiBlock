@@ -161,16 +161,20 @@ const std::map< std::string , LukFiFunction::idx_type > LukFiFunction::int_pars_
 /*--------------------- CONSTRUCTOR AND DESTRUCTOR -------------------------*/
 /*--------------------------------------------------------------------------*/
 
-LukFiFunction::LukFiFunction( v_col_var && vars ,
+LukFiFunction::LukFiFunction( int name , v_col_var && vars ,
 		const bool ordered )
  :  C05Function() , v_vars( std::move( vars ) )
 {
- NameF = get_dflt_int_par( intNameF );
+ NameF = name;
  NrCmp = get_dflt_int_par( intNrCmp );
  seed = get_dflt_int_par( intseed );
 
  bQR.clear(); aQR.clear(); cQR.clear();
  FiVal = Inf<double>();
+
+ if( ! ordered )
+  std::sort( vars.begin() , vars.end() ,
+ 	[]( const auto & p1, const auto & p2 ) { return( p1 < p2 ); } );
 
  } // end ( LukFiFunction::LukFiFunction( ) )  - - - - - - - - - - - - - - - - -
 
@@ -179,34 +183,11 @@ LukFiFunction::LukFiFunction( v_col_var && vars ,
 /*-------------------------- OTHER INITIALIZATIONS -------------------------*/
 /*--------------------------------------------------------------------------*/
 
-void LukFiFunction::set_ComputeConfig( ComputeConfig *scfg )
-{
- ThinComputeInterface::set_ComputeConfig( scfg );
-
- } // end ( LukFiFunction::set_relaxed_function( ) )   - - - - - - - - - - - -
-
-/*--------------------------------------------------------------------------*/
-
 void LukFiFunction::set_par( const idx_type par , const int value ) {
 
  switch( par ) {
   case( intNameF ):
    NameF = value;
-   if( NameF == 28 ) {
-    srand48( seed );
-    bQR.resize( NrCmp );
-    aQR.resize( NrCmp );
-    cQR.resize( NrCmp );
-
-    // define data - - - - - - - - - - - - - - - - - - - - -
-    for( int j = 0; j < NrCmp; j++ ) {
-     bQR[ j ] = 1e+2 * drand48();
-     aQR[ j ] = 2e+2 * ( drand48() - 0.5 );
-     cQR[ j ].resize( v_vars.size() );
-     for( int i = 0; i < v_vars.size() ; i++ )
- 	  cQR[ j ][ i ] = 2e+2 * ( drand48() - 0.5 );
-     }
-    }
    break;
   case( intNrCmp ):
    NrCmp = value;
@@ -535,6 +516,20 @@ int LukFiFunction::compute( bool changedvars )
   // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 28 ):
+   srand48( seed );
+   bQR.resize( NrCmp );
+   aQR.resize( NrCmp );
+   cQR.resize( NrCmp );
+
+   // define data - - - - - - - - - - - - - - - - - - - - -
+   for( int j = 0; j < NrCmp; j++ ) {
+    bQR[ j ] = 1e+2 * drand48();
+	aQR[ j ] = 2e+2 * ( drand48() - 0.5 );
+	cQR[ j ].resize( v_vars.size() );
+	for( int i = 0; i < v_vars.size() ; i++ )
+	 cQR[ j ][ i ] = 2e+2 * ( drand48() - 0.5 );
+	}
+
   tempL.resize( x.size() , 0 );
   FiVal_.resize( NrCmp );
    for( Index j = 0; j < NrCmp; j++ ) {
@@ -592,7 +587,7 @@ void LukFiFunction::get_linearization_coefficients( FunctionValue * g ,
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
- std::vector<FunctionValue> SubG( x.size() , 0.0 );
+SubG.resize( x.size() , 0.0 );
 
 switch( NameF ) {
  // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1171,6 +1166,20 @@ switch( NameF ) {
 
  } // end( LukFiFunction::get_linearization_coefficients() ) - - - - - - - - -
 
+/*--------------------------------------------------------------------------*/
+
+Function::FunctionValue LukFiFunction::get_linearization_constant(
+		 const LinearizationName name ) {
+
+ if( name != Inf<LinearizationName>() )
+  throw( std::logic_error( "the linearization is not available" ) );
+
+ double value_k = FiVal;
+ for( int i = 0 ; i < v_vars.size() ; i++ )
+  value_k +=  v_vars[ i ]->get_value() * SubG[ i ];
+
+ return( value_k );
+ } // end( LukFiFunction::get_linearization_coefficients() ) - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/
 /*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LagBFunction ---------*/
@@ -1236,15 +1245,6 @@ void LukFiFunction::map_active( c_Vec_p_Var & vars , Vec_Index & map ,
 
 /*--------------------------------------------------------------------------*/
 /*------------------- METHODS FOR HANDLING THE PARAMETERS ------------------*/
-/*--------------------------------------------------------------------------*/
-
-ComputeConfig * LukFiFunction::get_ComputeConfig( bool all ,
-		ComputeConfig * ocfg ) const {
-
- ComputeConfig* ccfg = ThinComputeInterface::get_ComputeConfig( all , ocfg );
- return( ccfg );
- } // end( LukFiFunction::get_ComputeConfig() )  - - - - - - - - - - - - - - -
-
 /*--------------------------------------------------------------------------*/
 
 int LukFiFunction::get_dflt_int_par( const idx_type par ) const

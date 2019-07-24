@@ -141,8 +141,8 @@ public:
  ///< load the LukFiBlock out of an istream
  /**< Load the LukFiBlock out of an istream. The format is:
   *
-  * name of the function
   * number of variables ,
+  * name of the function
   * number of components ,
   * seed
   */

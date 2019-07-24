@@ -94,6 +94,15 @@ static inline double read_dbl( istream & iStrm )
  }
 
 /*--------------------------------------------------------------------------*/
+
+/* static inline string read_string( istream & iStrm )
+{
+ string s;
+ read_T( iStrm , s );
+ return( s );
+ } */
+
+/*--------------------------------------------------------------------------*/
 /*----------------------------- STATIC MEMBERS -----------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -116,40 +125,33 @@ void LukFiBlock::load( std::istream &input )
  if( x.size() )
   throw( std::logic_error( "loading a non-empty LukFiBlock" ) );
 
- NameF = read_int( input );
- if( ( NameF < 1 ) || ( NameF > 25 ) )
-  throw( std::invalid_argument( "invalid name of the function" ) );
-
  int n = read_int( input );
  if( n < 0 )
   throw( std::invalid_argument( "invalid number of variables" ) );
+
+ int nameF = read_int( input );
+  if( nameF < 1 || nameF > 29 )
+   throw( std::invalid_argument( "invalid name of function" ) );
+
  SetDimension( n );
 
- NrCmp = read_int( input );
-  if( NrCmp < 0 )
-   throw( std::invalid_argument( "invalid number of components" ) );
-
- for( unsigned int i = 0 ; i < n ; i++ )
-  x[ i ].set_Block( this );
-
- seed = read_int( input );
- if( seed < 0 )
-  throw( std::invalid_argument( "invalid seed" ) );
-
  LukFiFunction::v_col_var vars( x.size() );
- for( int i = 0 ; i < x.size() ; ++i )
+ for( int i = 0 ; i < x.size() ; ++i ) {
+  x[ i ].set_Block( this );
   vars[ i ] = &x[ i ];
+  }
 
- f.set_function( new LukFiFunction( std::move( vars ) , true ) , eNoMod );
- auto luk_f = dynamic_cast<LukFiFunction *>( f.get_function() );
- if( luk_f == nullptr )
-  throw( std::logic_error( "the objective is not a LukFiFunction" ) );
-
- luk_f->set_par( LukFiFunction::intNrCmp , NrCmp );
- luk_f->set_par( LukFiFunction::intseed , seed );
- luk_f->set_par( LukFiFunction::intNameF , NameF );
-
+ f.set_function( new LukFiFunction( nameF , std::move( vars ) , true ) , eNoMod );
  f.set_Block( this );
+
+ /* string config_name = read_string( input );
+ if( config_name != "lukfi_config"  )
+  throw( std::invalid_argument( "invalid configuration name" ) ); */
+
+ ComputeConfig* cc = new ComputeConfig;
+ input >> *(cc);
+ f.get_function()->set_ComputeConfig( cc );
+ delete cc;
 
  // issue the NBModification - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -167,9 +169,9 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
  // dimensions and variable declarations
  netCDF::NcDim ndim = group.addDim( "num_vars" , x.size() );
 
- netCDF::NcDim name_f = group.addDim( "name_f" , NameF );
- netCDF::NcDim nr_cmp = group.addDim( "nr_cmp" , NrCmp );
- netCDF::NcDim vl_seed = group.addDim( "seed" , seed );
+ auto cmp_cnf = f.get_function()->get_ComputeConfig( );
+ netCDF::NcGroup sg_f = group.addGroup( "lukfi_config" );
+ cmp_cnf->serialize( sg_f );
 
  }  // end( LukFiBlock::serialize )
 
@@ -177,42 +179,32 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
 
 void LukFiBlock::deserialize( netCDF::NcGroup & group ) 
 {
+
  netCDF::NcDim n_dim  = group.getDim( "num_vars" );
  size_t n = n_dim.getSize();
 
  netCDF::NcDim name_f = group.getDim( "name_f" );
  NameF = name_f.getSize();
+
  SetDimension( n );
 
- netCDF::NcDim nr_cmp = group.getDim( "nr_cmp" );
- NrCmp = nr_cmp.getSize();
-
- netCDF::NcDim vl_seed = group.getDim( "seed" );
- seed = vl_seed.getSize();
-
- x.resize( n );
-
- // insert variables
-
- LukFiFunction::v_col_var p( x.size() );
+ LukFiFunction::v_col_var vars( x.size() );
  for( size_t i = 0 ; i < n ; i++ ) {
   x[ i ].set_Block( this );
-  p.push_back( &x[ i ] );
+  vars[ i ] = &x[ i ];
   }
 
- f.set_function( new LukFiFunction( std::move( p ) , true ) , eNoMod );
- auto luk_f = dynamic_cast<LukFiFunction *>( f.get_function() );
- if( luk_f == nullptr )
-  throw( std::logic_error( "the objective is not a LukFiFunction" ) );
+ f.set_function( new LukFiFunction( NameF , std::move( vars ) , true ) , eNoMod );
  f.set_Block( this );
 
- luk_f->set_par( LukFiFunction::intNameF , NameF );
- luk_f->set_par( LukFiFunction::intNrCmp , NrCmp );
- luk_f->set_par( LukFiFunction::intseed , seed );
+ netCDF::NcGroup sg_f = group.getGroup( "lukfi_config" );
 
- f.set_Block( this );
+ auto cmp_cnf = dynamic_cast< ComputeConfig * >(
+		    Configuration::new_Configuration( sg_f ) );
+ f.get_function()->set_ComputeConfig( cmp_cnf );
+ delete cmp_cnf;
 
- }  // end( LukFiBlock::deserialize )
+ }  // end( LukFiBlock::deserialize )  - - - - - - - - - - - - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/
 /*-------------------------- PRIVATE METHODS -------------------------------*/
@@ -327,15 +319,10 @@ void LukFiBlock::SetDimension( int n )
    break;
   // smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 26 ):
-   x.resize( n );
-   break;
   // AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 27 ):
-   x.resize( n );
-   break;
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 28 ):
-   x.resize( n );
    break;
   // Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 29 ):
