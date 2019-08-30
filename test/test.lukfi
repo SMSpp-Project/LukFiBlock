@@ -1,12 +1,85 @@
-# parameters of the function 
+# ComputeConfig of LukFiBlock::LukFiFunction  - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-2	n. of variables for functions 26, 27 and 28
+0 # f_diff, all the parameters that are *not* specified has to be set to 
+  # the default value
+  
+5 # the dimension "num_int_par"   
+0  2   # n. of variables for functions 26, 27 and 28
+1  1   # which function (1, ..., 29) -> Rosenbrock
+2  1   # n. of components for function 28 (MaxQR)
+3  1   # seed for function 28 (MaxQR)
+4  400 # GPMaxSz
 
-1   diff
-3   number of int parameters
+0 # the dimension "num_dbl_par"
+0 # the dimension "num_str_par"
 
-intNameF  3	which function (1, ..., 29)
-intNrCmp  2	 n. of components for function 28 (MaxQR)
-intseed   1	 seed for function 28 (MaxQR)
+# end ( ComputeConfig of LukFiBlock::LukFiFunction )
 
-# the end
+# BlockSolverConfig - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+0 # configuration is not a "differential" one
+1 # number k of the names of Solver
+BundleSolver # name of Solver
+
+BSCmptConfig # description of the :ComputeConfig object  - - - - - - - - - - - 
+
+0 # f_diff, all the parameters that are *not* specified has to be set to 
+  # the default value
+
+17 # the dimension "num_int_par" * * * * * * * *
+
+0  100  # MaxIter, max number of iterations for each call
+2  2    # LogVerb, 
+
+4  20   # BPar1, discard items when they have been useless for <this> iterations
+5  0    # BPar6, second parameter for dynamic max n. of items per iteration
+6  0    # MnSSC, min number of consecutive SS with the same t for a t increase
+7  3    # MnNSC, min number of consecutive NS with the same t for a t decrease
+8  12   # tSPar1, long-term t-strategy (0 = none, 4 = soft, 8 = hard, 12 = balancing)
+
+9 2     # intMaxNrEvls
+10 0    # true if LmbdBst has to be kept, false otherwise
+
+11  1   # true if MP solver is a QPPenalty, otherwise MP is a OSiMPSolver
+        # QPPenalty's parameters : - - - - - -
+12  0	# MxAdd, how many variables can be added to the base at each
+      	# iteration in BMinQuad (0 = at will)
+13 0    # MxRmv, how many variables can be removed from the base at each
+      	# iteration in BMinQuad (0 = at will)
+        # OSiMPSolver's parameters : - - - - - -
+14 4    # CPLEX algorithm
+15 0    # pre-processing (reduction)
+16 1    # threads
+17 3    # stabilization
+18 1    # OsiCpxSolverInterface
+
+
+19 # the dimension "num_dbl_par" * * * * * * * *
+
+1  1e-8   # RelAcc
+5  1e-8   # precision required to the MP Solver (optimality)
+7  1e-8   # precision required to the MP Solver (feasibility)
+
+11  1e2   # tStar, stopping parameter
+12  0.1   # EInit,
+13  1     # BPar3, max n. of items to fetch from Fi() at each iteration
+14  1     # BPar4,
+15  4     # BPar5, first parameter for dynamic max n. of items per iteration
+16  -0.1  # m1, parameter: SS if improvement >= | m1 | * ( predicted improvement )
+17  0.9   # m3, parameter: if Alfa1 >= m3 * Sigma, decrease t
+18  10    # mxIncr, max increase of t
+19  1.5   # mnIncr, min increase of t (each time it is increased)
+20  0.1   # mxDecr, max decrease of t
+21  0.66  # mnDecr, min decrease of t (each time it is decreased)
+22  1e+6  # tMaior, maximum value for t
+23  1e-4  # tMinor, minimum value for t
+24  1     # tInit, initial value for t
+25  0.001 # tSPar2, parameter for the long-term t-strategy
+
+26  0.01  # CtOff, cut-off factor for pricing in MinQuad
+        
+0 # the dimension "num_str_par" * * * * * * * *
+
+# end BlockSolverConfig

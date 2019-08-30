@@ -23,19 +23,14 @@ NAME = LukFiMain
 DIR = ./
 
 # debug switches
-#SW = -g -Wextra -Wall -pedantic -std=c++14 -Wno-unused-parameter \
-#	-Werror -Wno-unused-local-typedefs -Wno-sign-compare \
-#	-Wno-error=parentheses \
-#	-Wno-error=ignored-qualifiers -Wno-error=unused-variable \
-#	-Wno-error=pedantic #&> error.txt
-SW = -g -std=c++17 -ferror-limit=1
+SW = -g -std=c++14 -ferror-limit=1 -lbz2 -lz 
 
 # production switches
-#SW = -O3 -DNDEBUG -std=c++14
+#SW = -O3 -DNDEBUG -std=c++14  
 
 # compiler
-#CC = g++-8
-CC = clang++
+#CC = /usr/local/Cellar/gcc/8.3.0_2/bin/g++-8 
+CC = clang++ 
 
 # default target- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -59,6 +54,10 @@ clean::
 SMS++SDR = ../../SMS++/
 include $(SMS++SDR)lib/makefile-inc
 
+# BundeSolver
+BNDSLVSDR = ../../BundleSolver/
+include $(BNDSLVSDR)makefile-c
+
 # LukFiBlock
 LukFiSDR = ../
 include $(LukFiSDR)makefile
@@ -66,10 +65,10 @@ include $(LukFiSDR)makefile
 # main module (linking phase) - - - - - - - - - - - - - - - - - - - - - - - -
 
 # object files
-MOBJ =  $(LukFiOBJ) $(SMS++OBJ)
+MOBJ = $(LukFiOBJ) $(SMS++OBJ) $(BNDSLVOBJ)
 
 # libreries
-MLIB =  $(SMS++LIB) $(LukFiLIB)
+MLIB = $(SMS++LIB) $(BNDSLVLIB) $(LukFiLIB)
 
 $(NAME): $(MOBJ) $(DIR)main.o 
 	$(CC) -o $(NAME) $(DIR)main.o $(MOBJ) $(MLIB) $(SW)
@@ -77,10 +76,10 @@ $(NAME): $(MOBJ) $(DIR)main.o
 # dependencies: every .o from its .C + every recursively included .h- - - - -
 
 # include directives
-MINC =  $(SMS++INC) $(LukFiINC)
+MINC = $(SMS++INC) $(BNDSLVINC) $(LukFiINC)
 
 # includes
-MH =    $(SMS++H) $(LukFiH)
+MH = $(SMS++H) $(BNDSLVH) $(LukFiH) 
 
 # compile command
 
