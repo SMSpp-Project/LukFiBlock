@@ -22,3 +22,4 @@ test/LukFiMain
 .settings/language.settings.xml
 .project
 .cproject
+.DS_Store

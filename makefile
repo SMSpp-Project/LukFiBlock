@@ -32,11 +32,11 @@
 
 # macroes to be exported- - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-LukFiOBJ = $(LukFiSDR)LukFiBlock.o $(LukFiSDR)LukFiFunction.o
+LukFiOBJ = $(LukFiSDR)LukFiBlock.o
 
 LukFiINC = -I$(LukFiSDR)
 
-LukFiH   = $(LukFiSDR)LukFiFunction.h $(LukFiSDR)LukFiBlock.h
+LukFiH   = $(LukFiSDR)LukFiBlock.h
 
 # clean - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -47,10 +47,6 @@ clean::
 
 $(LukFiSDR)LukFiBlock.o: $(LukFiSDR)LukFiBlock.cpp \
 	$(LukFiSDR)LukFiBlock.h $(SMS++OBJ)
-	$(CC) -c $*.cpp -o $@ $(LukFiINC) $(SMS++INC) $(SW)
-	
-$(LukFiSDR)LukFiFunction.o: $(LukFiSDR)LukFiFunction.cpp \
-	$(LukFiSDR)LukFiFunction.h $(SMS++OBJ)
 	$(CC) -c $*.cpp -o $@ $(LukFiINC) $(SMS++INC) $(SW)
 
 ########################## End of makefile ###################################

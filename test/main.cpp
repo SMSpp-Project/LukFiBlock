@@ -24,6 +24,7 @@
 #include <fstream>
 
 #include "LukFiBlock.h"
+#include "BundleSolver.h"
 
 /*--------------------------------------------------------------------------*/
 /*-------------------------------- USING -----------------------------------*/
@@ -53,21 +54,12 @@ int main( int argc , char **argv )
  ProbFile >> *sLukFi;
  cout << *sLukFi;
 
- sLukFi->serialize( argv[ 2 ] );
+ sLukFi->register_Solver( Solver::new_Solver( "BundleSolver" ) );
 
- cout << "Serialized " << argv[ 1 ] << " to " << argv[ 2 ] <<endl;
- 
- if( argc == 4 ) {
-  Block *P1 = Block::deserialize( argv[ 2 ] );
-
-  cout << "De-Serialized " << argv[ 2 ] << endl;
-
-  P1->serialize( argv[ 3 ] );
-
-  cout << "Re-Serialized " << argv[ 2 ] << " to " << argv[ 3 ] <<endl;
-
-  delete P1;
-  }
+ BlockSolverConfig * bsc = new BlockSolverConfig;
+ ProbFile >> *( bsc );
+ sLukFi->set_SolverConfig( bsc );
+ delete bsc;
 
  delete sLukFi;
 
