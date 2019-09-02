@@ -355,6 +355,10 @@ class LukFiFunction : public C05Function {
 
  virtual int get_dflt_int_par( const idx_type par ) const override;
 
+
+
+
+
 /**@} ----------------------------------------------------------------------*/
 /*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction ---------*/
 /*--------------------------------------------------------------------------*/

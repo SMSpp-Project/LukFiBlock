@@ -39,7 +39,7 @@ using namespace SMSpp_di_unipi_it;
 
 int main( int argc , char **argv )
 {
- if( argc <3 || argc>4) {
+ if( argc <1 || argc>2) {
   cerr << "Usage: " << argv[ 0 ] << " LukFi_file_name NC4_file_name [NC4_file_name_2]" << endl;
   return( 1 );
   }
@@ -54,7 +54,11 @@ int main( int argc , char **argv )
  ProbFile >> *sLukFi;
  cout << *sLukFi;
 
- sLukFi->register_Solver( Solver::new_Solver( "BundleSolver" ) );
+ auto solver = Solver::new_Solver( "BundleSolver" );
+
+ sLukFi->register_Solver( solver );
+
+ solver->compute();
 
  BlockSolverConfig * bsc = new BlockSolverConfig;
  ProbFile >> *( bsc );

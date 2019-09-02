@@ -23,7 +23,7 @@ NAME = LukFiMain
 DIR = ./
 
 # debug switches
-SW = -g -std=c++14 -ferror-limit=1 -lbz2 -lz 
+SW = -g -std=c++17 -ferror-limit=1 -lbz2 -lz 
 
 # production switches
 #SW = -O3 -DNDEBUG -std=c++14  
