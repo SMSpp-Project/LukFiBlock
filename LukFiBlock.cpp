@@ -232,6 +232,42 @@ const std::map< std::string , LukFiBlock::LukFiFunction::idx_type >
 SMSpp_insert_in_factory_cpp_1( LukFiBlock );
 
 /*--------------------------------------------------------------------------*/
+/*-------------------------- OTHER INITIALIZATIONS -------------------------*/
+/*--------------------------------------------------------------------------*/
+
+void LukFiBlock::generate_abstract_variables( Configuration *stvv )
+{
+ if( AR & HasVar )  // the variables are there already
+  return;           // nothing to do
+
+ for( auto & var : x )
+  var.set_Block( this );
+
+ add_static_variable( x );
+ AR |= HasVar;
+
+ }  // end( LukFiBlock::generate_abstract_variables )  - - - - - - - - - - - -
+
+/*--------------------------------------------------------------------------*/
+
+void LukFiBlock::generate_objective( Configuration *objc )
+{
+ if( AR & HasObj )  // the objective is there already
+  return;           // cowardly (and silently) return
+
+ LukFiFunction::v_col_var vars( x.size() );
+ for( int i = 0 ; i < x.size() ; ++i )
+  vars[ i ] = &x[ i ];
+
+ f.set_function( new LukFiFunction( NameF , std::move( vars ) , true ) , eNoMod );
+ //f.set_Block( this );
+ set_objective( & f , eNoMod );
+
+ AR |= HasObj;
+
+ } // end( LukFiBlock::generate_objective )  - - - - - - - - - - - - - - - - -
+
+/*--------------------------------------------------------------------------*/
 /*-------------------------- PROTECTED METHODS -----------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -247,8 +283,8 @@ void LukFiBlock::load( std::istream &input )
  if( x.size() )
   throw( std::logic_error( "loading a non-empty LukFiBlock" ) );
 
- int nameF = read_int( input );
-  if( nameF < 1 || nameF > 29 )
+ NameF = read_int( input );
+  if( NameF < 1 || NameF > 29 )
    throw( std::invalid_argument( "invalid name of function" ) );
 
  int n = read_int( input );
@@ -257,14 +293,13 @@ void LukFiBlock::load( std::istream &input )
 
  SetDimension( n );
 
- LukFiFunction::v_col_var vars( x.size() );
- for( int i = 0 ; i < x.size() ; ++i ) {
-  x[ i ].set_Block( this );
-  vars[ i ] = &x[ i ];
-  }
+ // generate abstract variables  - - - - - - - - - - - - - - - - - - - - - - -
 
- f.set_function( new LukFiFunction( nameF , std::move( vars ) , true ) , eNoMod );
- f.set_Block( this );
+ generate_abstract_variables();
+
+ // generate abstract function  - - - - - - - - - - - - - - - - - - - - - - -
+
+ generate_objective();
 
  /*  string config_name = read_string( input );
  if( config_name != "LukfiConfig"  )
@@ -636,6 +671,7 @@ LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars ,
  :  C05Function() , v_vars( std::move( vars ) )
 {
  NameF = name;
+
  NrCmp = get_dflt_int_par( intNrCmp );
  seed = get_dflt_int_par( intseed );
 

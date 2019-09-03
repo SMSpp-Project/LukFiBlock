@@ -492,7 +492,7 @@ class LukFiFunction : public C05Function {
  /** Constructor of LukFiBlock. It accepts a pointer to the father
   * Block, which can be of any type. */
 
- LukFiBlock( Block *father = nullptr ) : Block( father ) {}
+ LukFiBlock( Block *father = nullptr ) : Block( father ) , AR( 0 ) {}
 
 /*--------------------------------------------------------------------------*/
  /// destructor of LukFiBlock
@@ -507,6 +507,13 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 /** @name Other initializations
  *  @{ */
+
+ virtual void generate_abstract_variables( Configuration *stvv = nullptr )
+   override;
+
+/*--------------------------------------------------------------------------*/
+
+ virtual void generate_objective( Configuration *objc = nullptr ) override;
 
 /*@} -----------------------------------------------------------------------*/
 /*-------------------------------- ACCESSORS -------------------------------*/
@@ -558,9 +565,18 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 
  std::vector<ColVariable> x;       /// the variables
-
  FRealObjective f;                 /// the objective function
 
+ int NameF;       ///< name (number) of the function at point Lambda
+ int NrCmp;       ///< number of component functions
+ int seed;        ///< seed for random number generation
+
+ unsigned char AR;   ///< bit-wise coded: what abstract is there
+
+ static constexpr unsigned char HasVar = 1;
+ ///< first bit of AR == 1 if the Variable have been constructed
+ static constexpr unsigned char HasObj = 2;
+ ///< second bit of AR == 1 if the Objective has been constructed
 
 /*--------------------------------------------------------------------------*/
 /*--------------------- PRIVATE PART OF THE CLASS --------------------------*/
@@ -579,10 +595,6 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 /*---------------------------- PRIVATE FIELDS ------------------------------*/
 /*--------------------------------------------------------------------------*/
-
- int NameF;       ///< name (number) of the function at point Lambda
- int NrCmp;       ///< number of component functions
- int seed;        ///< seed for random number generation
 
  SMSpp_insert_in_factory_h;        // insert it in the Block factory
 
