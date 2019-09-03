@@ -151,6 +151,7 @@ template< typename T>
 static void read_T( istream & iStrm , T & t )
 {
  iStrm >> eatcomments;
+
  int c = iStrm.peek();
 
  switch( c ) {
@@ -172,6 +173,7 @@ static void read_T( istream & iStrm , T & t )
   } while( ( c != iStrm.widen( ' ' ) ) &&
 	   ( c != iStrm.widen( '\n' ) ) &&
 	   ( c != iStrm.widen( '\t' ) ) );
+
  }
 
 /*--------------------------------------------------------------------------*/
@@ -194,12 +196,14 @@ static inline double read_dbl( istream & iStrm )
 
 /*--------------------------------------------------------------------------*/
 
-/* static inline string read_string( istream & iStrm )
+static inline string read_string( istream & iStrm )
 {
+ iStrm >> eatcomments;
  string s;
- read_T( iStrm , s );
+ int c = iStrm.peek();
+ iStrm >> s;
  return( s );
- } */
+ }
 
 /*--------------------------------------------------------------------------*/
 /*----------------------------- STATIC MEMBERS -----------------------------*/
@@ -207,20 +211,18 @@ static inline double read_dbl( istream & iStrm )
 
 // define and initialize here the vector of int parameters names
 const std::vector< std::string > LukFiBlock::LukFiFunction::int_pars_str =
-             { "intNameF" , "intNrCmp" , "intseed" };
+             { "intNrCmp" , "intseed" };
 
 // define and initialize here the default int parameters
 const std::vector<int> LukFiBlock::LukFiFunction::dflt_int_par =
-        {    1 ,  // intNameF
-             1,   // intNrCmp
+        {    1,   // intNrCmp
 			 0    // intseed
         };
 
 // define and initialize here the map for int parameters names
 const std::map< std::string , LukFiBlock::LukFiFunction::idx_type >
    LukFiBlock::LukFiFunction::int_pars_map =
-            { { "intNameF"  , LukFiBlock::LukFiFunction::intNameF  } ,
-		      { "intNrCmp" , LukFiBlock::LukFiFunction::intNrCmp } ,
+            { { "intNrCmp" , LukFiBlock::LukFiFunction::intNrCmp } ,
 			  { "intseed" , LukFiBlock::LukFiFunction::intseed }
 			};
 
@@ -245,13 +247,13 @@ void LukFiBlock::load( std::istream &input )
  if( x.size() )
   throw( std::logic_error( "loading a non-empty LukFiBlock" ) );
 
- int n = read_int( input );
- if( n < 0 )
-  throw( std::invalid_argument( "invalid number of variables" ) );
-
  int nameF = read_int( input );
   if( nameF < 1 || nameF > 29 )
    throw( std::invalid_argument( "invalid name of function" ) );
+
+ int n = read_int( input );
+ if( n < 0 )
+  throw( std::invalid_argument( "invalid number of variables" ) );
 
  SetDimension( n );
 
@@ -264,8 +266,8 @@ void LukFiBlock::load( std::istream &input )
  f.set_function( new LukFiFunction( nameF , std::move( vars ) , true ) , eNoMod );
  f.set_Block( this );
 
- /* string config_name = read_string( input );
- if( config_name != "lukfi_config"  )
+ /*  string config_name = read_string( input );
+ if( config_name != "LukfiConfig"  )
   throw( std::invalid_argument( "invalid configuration name" ) ); */
 
  ComputeConfig* cc = new ComputeConfig;
@@ -651,8 +653,8 @@ LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars ,
 void LukFiBlock::LukFiFunction::set_par( const idx_type par , const int value ) {
 
  switch( par ) {
-  case( intNameF ):
-   NameF = value;
+  case( intGPMaxSz ):
+   GPMaxSz = value;
    break;
   case( intNrCmp ):
    NrCmp = value;
@@ -1710,8 +1712,8 @@ void LukFiBlock::LukFiFunction::map_active( c_Vec_p_Var & vars , Vec_Index & map
 
 int LukFiBlock::LukFiFunction::get_dflt_int_par( const idx_type par ) const
 {
- if( ( par >= intNameF ) && ( par < intLastParLukF ) )
-  return( dflt_int_par[ par - intNameF ] );
+ if( ( par >= intLastParC0F ) && ( par < intLastParLukF ) )
+  return( dflt_int_par[ par - intLastParC0F ] );
  else
   return( C05Function::get_dflt_int_par( par ) );
 
@@ -1722,8 +1724,8 @@ int LukFiBlock::LukFiFunction::get_dflt_int_par( const idx_type par ) const
 int LukFiBlock::LukFiFunction::get_int_par( const idx_type par ) const
 {
  switch( par ) {
-  case( intNameF ):
-   return( NameF );
+  case( intGPMaxSz ):
+   return( GPMaxSz );
    break;
   case( intNrCmp ):
    return( NrCmp );
@@ -1737,6 +1739,29 @@ int LukFiBlock::LukFiFunction::get_int_par( const idx_type par ) const
 
  } // end( LukFiFunction::get_int_par )  - - - - - - - - - - - - - - - - - - -
 
+/*--------------------------------------------------------------------------*/
+
+LukFiBlock::LukFiFunction::idx_type LukFiBlock::LukFiFunction::int_par_str2idx(
+  const std::string & name ) const
+{
+ // these may be many enough as to warrant using a map
+ const auto it = int_pars_map.find( name );
+ if( it != int_pars_map.end() )
+  return( it->second );
+ else
+  return( C05Function::int_par_str2idx( name ) );
+ } // end( LukFiFunction::int_par_str2idx )  - - - - - - - - - - - - - - - - -
+
+/*--------------------------------------------------------------------------*/
+
+const std::string & LukFiBlock::LukFiFunction::int_par_idx2str(
+  const idx_type idx ) const
+{
+ if( ( idx >= intLastParC0F ) && ( idx < intLastParLukF ) )
+  return( int_pars_str[ idx - intLastParC0F ] );
+ else
+  return( C05Function::int_par_idx2str( idx ) );
+ } // end( LukFiFunction::iint_par_idx2str ) - - - - - - - - - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/
 /*--------------------- End File LukFiBlock.cpp ----------------------------*/

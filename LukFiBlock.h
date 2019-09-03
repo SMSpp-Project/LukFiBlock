@@ -216,9 +216,8 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 
   enum int_par_type_LukF {
-   intNameF = intLastParC0F , // name (number) of the function
-   intNrCmp ,                 // number of component functions
-   intseed ,                   // seed for random number generation
+   intNrCmp = intLastParC0F , // number of component functions
+   intseed ,                  // seed for random number generation
    intLastParLukF
    };  // end( int_par_type_LukF )
 
@@ -349,15 +348,27 @@ class LukFiFunction : public C05Function {
 /** @name Handling the parameters of the LukFiFunction
  *  @{ */
 
+ virtual idx_type get_num_int_par( void ) const override
+ {
+  return( intLastParLukF );
+  }
+
+/*--------------------------------------------------------------------------*/
+
  virtual int get_int_par( const idx_type par ) const override;
 
 /*--------------------------------------------------------------------------*/
 
+ virtual idx_type int_par_str2idx( const std::string & name ) const override;
+
+/*--------------------------------------------------------------------------*/
+
+ virtual const std::string & int_par_idx2str( const idx_type idx )
+   const override;
+
+/*--------------------------------------------------------------------------*/
+
  virtual int get_dflt_int_par( const idx_type par ) const override;
-
-
-
-
 
 /**@} ----------------------------------------------------------------------*/
 /*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction ---------*/
@@ -436,6 +447,8 @@ class LukFiFunction : public C05Function {
  dblVR1 bQR;
  dblVR1 aQR;
  dblVR2 cQR;
+
+ Index GPMaxSz;
 
  std::vector<FunctionValue> SubG;
  double FiVal;

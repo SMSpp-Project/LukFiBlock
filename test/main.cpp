@@ -54,16 +54,14 @@ int main( int argc , char **argv )
  ProbFile >> *sLukFi;
  cout << *sLukFi;
 
- auto solver = Solver::new_Solver( "BundleSolver" );
-
- sLukFi->register_Solver( solver );
-
- solver->compute();
-
  BlockSolverConfig * bsc = new BlockSolverConfig;
  ProbFile >> *( bsc );
+
  sLukFi->set_SolverConfig( bsc );
  delete bsc;
+
+ Solver * slvr = (sLukFi->get_registered_solvers()).front();
+ int rtrn = slvr->compute( false );
 
  delete sLukFi;
 
