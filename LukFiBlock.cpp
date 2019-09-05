@@ -714,7 +714,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
  dblVR3 A16( 5 , dblVR2( 10 , dblVR1( 10 , 0 ) ) );
  dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
 
- dblVR1 x;
+ dblVR1 x( v_vars.size() );
  for( int i = 0 ; i < v_vars.size() ; i++ )
   x[ i ] = v_vars[ i ]->get_value();
 
@@ -728,7 +728,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // Crescent  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- case( 2 ):
+  case( 2 ):
    FiVal = std::max( x[0] * x[0] + ( x[1] - double(1) )
 	 * ( x[1] - double(1) ) + x[1] - double(1) ,
      - x[0] * x[0] - ( x[1] - double(1) )
@@ -1083,7 +1083,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * 
  dblVR3 A16( 5 , dblVR2( 10 , dblVR1( 10 , 0 ) ) );
  dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
 
- dblVR1 x;
+ dblVR1 x( v_vars.size() );
  for( int i = 0 ; i < v_vars.size() ; i++ )
   x[ i ] = v_vars[ i ]->get_value();
 

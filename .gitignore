@@ -8,3 +8,4 @@ test/LukFiMain
 .project
 .cproject
 .DS_Store
+test/cplex.log

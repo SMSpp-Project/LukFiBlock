@@ -23,10 +23,10 @@ NAME = LukFiMain
 DIR = ./
 
 # debug switches
-SW =  -g3 -glldb -fno-inline -std=c++17 -ferror-limit=1 -lbz2 -lz 
+SW =  -g3 -glldb -fno-inline -std=c++17 -ferror-limit=1 -lz -lbz2
 
 # production switches
-#SW = -O3 -DNDEBUG -std=c++14  
+#SW = -O3 -DNDEBUG -std=c++17  
 
 # compiler
 #CC = /usr/local/Cellar/gcc/8.3.0_2/bin/g++-8 

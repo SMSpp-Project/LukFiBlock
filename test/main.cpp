@@ -34,6 +34,12 @@ using namespace std;
 using namespace SMSpp_di_unipi_it;
 
 /*--------------------------------------------------------------------------*/
+/*----------------------------- CONSTANTS ----------------------------------*/
+/*--------------------------------------------------------------------------*/
+
+const char *const logF = "log.bn";
+
+/*--------------------------------------------------------------------------*/
 /*--------------------------------- Main -----------------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -60,6 +66,16 @@ int main( int argc , char **argv )
  delete bsc;
 
  Solver * slvr = (sLukFi->get_registered_solvers()).front();
+
+ // open log-file - - - - - - - - - - -  - - - - - - - - - - - - - - - - - -
+ //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ ofstream LOGFile( logF , ofstream::out );
+ if( ! LOGFile.is_open() )
+  cerr << "Warning: cannot open log file """ << logF << """" << endl;
+ else
+  slvr->set_log( &LOGFile );
+
  int rtrn = slvr->compute( false );
 
  delete sLukFi;
