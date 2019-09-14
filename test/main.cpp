@@ -78,6 +78,11 @@ int main( int argc , char **argv )
 
  int rtrn = slvr->compute( false );
 
+ LOGFile << std::endl << std::endl << "Opt. Fi() value = "
+		 << slvr->get_lb() << std::endl;
+
+ // std::endl << "Total Fi() evaluations = "
+
  delete sLukFi;
 
  return( 0 );
