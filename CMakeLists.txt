@@ -1,42 +1,71 @@
-# ----- Project description and directories ------------------------------------
+# --------------------------------------------------------------------------- #
+#    Main CMake file for LukFi Block                                          #
+#                                                                             #
+#                              Niccolo' Iardella                              #
+#                          Operations Research Group                          #
+#                         Dipartimento di Informatica                         #
+#                             Universita' di Pisa                             #
+# --------------------------------------------------------------------------- #
 cmake_minimum_required(VERSION 3.8)
-project(LukFiBlock
-        VERSION 1.0.0 # TODO: set proper version
-        HOMEPAGE_URL "https://gitlab.com/egorgone/lukfiblock"
-        DESCRIPTION "LukFiBlock for SMS++")
+# ----- Project definition and directories ---------------------------------- #
+# TODO: set proper version
+project(LukFiBlock VERSION 1.0.0)
 
 set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR})
 
-# ----- Requirements -----------------------------------------------------------
-find_package(Boost REQUIRED)
-find_package(Eigen3 REQUIRED)
-find_package(SMSpp REQUIRED)
+# ----- Requirements -------------------------------------------------------- #
+# find_package() is used to find libraries and automatically configure them.
+# It requires either a package configuration module (***Config.cmake) or a
+# find module (Find***.cmake), usually provided by libraries.
 
-# ----- Library ----------------------------------------------------------------
-add_library(LukFiBlock STATIC LukFiBlock.cpp)
+# If we are configuring from the umbrella project, we assume that the valid
+# settings are there.
+# If we are building this project alone we use its settings but we check
+# also for settings in its parent directory.
+# TODO: Check if this behaviour is correct
+if (NOT SMS++_CONFIG_ALL)
+    include(CMakeCustom.txt OPTIONAL)
+    include(../CMakeCustom.txt OPTIONAL)
+endif ()
+
+# This is to use the find modules we provide
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+find_package(SMSpp REQUIRED)
+find_package(netCDF REQUIRED)
+
+# ----- Library ------------------------------------------------------------- #
+add_library(LukFiBlock STATIC)
 target_compile_features(LukFiBlock PUBLIC cxx_std_17)
 
-target_include_directories(LukFiBlock
-                           PUBLIC
+target_sources(LukFiBlock PRIVATE
+               ${PROJECT_SOURCE_DIR}/LukFiBlock.cpp
+               )
+
+# Different INSTALL_INTERFACE and BUILD_INTERFACE paths are used when
+# generating the target import file (***Targets.cmake), that must be different
+# for local build and installation.
+target_include_directories(LukFiBlock PUBLIC
                            $<INSTALL_INTERFACE:include/SMS++>
-                           $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>
-                           )
+                           $<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>)
 
 target_link_libraries(LukFiBlock PUBLIC
                       SMS++::SMSpp
-                      Boost::boost
                       Eigen3::Eigen)
 
 # Alias for testing
 add_library(SMS++::LukFiBlock ALIAS LukFiBlock)
 
-# ----- Install instructions ---------------------------------------------------
+# ----- Install instructions ------------------------------------------------ #
+# For installing the library and all its CMake modules on the system.
+# Not required for local builds (see below).
+
 include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/SMS++)
 
 # Install library
 install(TARGETS LukFiBlock
-        EXPORT  LukFiBlock-targets
+        EXPORT LukFiBlock-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
@@ -45,35 +74,50 @@ install(FILES
         ${PROJECT_SOURCE_DIR}/LukFiBlock.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/LukFiBlock)
 
-# Install export file *Targets.cmake
+# Install target import file
 install(EXPORT LukFiBlock-targets
-        FILE   LukFiBlockTargets.cmake
+        FILE LukFiBlockTargets.cmake
         NAMESPACE SMS++::
         DESTINATION ${INSTALL_CONFIGDIR})
 
-# Create *ConfigVersion.cmake
+# Generate package version file
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/LukFiBlockConfigVersion.cmake
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion)
 
-# Create *Config.cmake
+# Generate package configuration file
 configure_package_config_file(
         ${CMAKE_CURRENT_LIST_DIR}/cmake/LukFiBlockConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/LukFiBlockConfig.cmake
         INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
 
-# Install the Config and ConfigVersion
+# Install package version and configuration files
+# TODO: Check if we should install also find modules
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/LukFiBlockConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/LukFiBlockConfigVersion.cmake
+        # ${CMAKE_CURRENT_LIST_DIR}/cmake/FindnetCDF.cmake
         DESTINATION ${INSTALL_CONFIGDIR})
 
-# ----- Export from the build tree ---------------------------------------------
+# ----- Export from the build tree ------------------------------------------ #
+# This is needed so other projects can find the library in a local build.
+# It does not affect installation.
+
 export(EXPORT LukFiBlock-targets
        FILE ${CMAKE_CURRENT_BINARY_DIR}/LukFiBlockTargets.cmake
        NAMESPACE SMS++::)
+
+# Export also the find modules for the local config file to use it
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindnetCDF.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/FindnetCDF.cmake
+               COPYONLY)
+
+# FIXME: I think that exporting this is a bad idea
+#configure_file(${CMAKE_CURRENT_LIST_DIR}/CMakeCustom.txt
+#               ${CMAKE_CURRENT_BINARY_DIR}/CMakeCustom.txt
+#               COPYONLY)
 
 # Register package in user's package registry (~/.cmake/registry)
 export(PACKAGE LukFiBlock)
