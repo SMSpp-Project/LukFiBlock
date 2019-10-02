@@ -19,10 +19,7 @@ include(CMakeFindDependencyMacro)
 
 # ----- Requirements -------------------------------------------------------- #
 # This is needed to find the custom modules we provide
-list(APPEND CMAKE_MODULE_PATH ${LukFiBlock_CMAKE_DIR})
-
-# FIXME: Not a good idea because CMakeCustom.txt is not to be installed
-#include(${SMILPBlock_CMAKE_DIR}/CMakeCustom.txt OPTIONAL)
+list(APPEND CMAKE_MODULE_PATH ${LukFiBlock_CMAKE_DIR}))
 
 find_dependency(SMSpp REQUIRED)
 find_dependency(netCDF REQUIRED)
