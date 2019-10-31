@@ -34,7 +34,7 @@ target_sources(LukFiBlock PRIVATE LukFiBlock.cpp)
 # for local build and installation.
 target_include_directories(
         LukFiBlock PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include/SMS++>)
 
 target_link_libraries(LukFiBlock PUBLIC SMS++::SMSpp)
@@ -98,3 +98,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Register package in user's package registry (~/.cmake/registry)
     export(PACKAGE LukFiBlock)
 endif ()
+
+# ----- Subdirectories ------------------------------------------------------ #
+add_subdirectory(test)
