@@ -234,8 +234,7 @@ class LukFiFunction : public C05Function {
   /** constructor of LukFiFunction. It accepts the name of the function
       and the pointer to the vector of variables. */
 
- LukFiFunction( int name , v_col_var && vars ,
-		 const bool ordered = false );
+ LukFiFunction( int name , v_col_var && vars );
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -272,22 +271,7 @@ class LukFiFunction : public C05Function {
 /** @name Methods for handling Modification
  *  @{ */
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
- /// remove a bunch of *dynamic* Lagrangian pairs <y, g(x)>,
- /** This method removes a bunch of Lagrangian pairs. The structure LagMatrix
-  *  used to compute the Lagrangian costs needs to be update.  */
-
- virtual void remove_variables( std::vector<Variable *> && vars ,
-				const bool ordered = false ,
-				c_ModParam issueMod = eModBlck ) override {
-
-  throw( std::logic_error( "variables remotion is not allowed" ) );
-  }
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
- virtual void remove_variable( Variable * var ,
+ virtual void remove_variable( Index i ,
  			       c_ModParam issueMod = eModBlck ) override {
   throw( std::logic_error( "variables remotion is not allowed" ) );
   }
@@ -317,9 +301,8 @@ class LukFiFunction : public C05Function {
   * This implements the virtual function of class C05Function.  */
 
  virtual void get_linearization_coefficients( FunctionValue * g ,
-   const LinearizationName name = Inf<LinearizationName>() ,
-   c_Vec_Index & indices = {} , c_Index start = 0 ,
-   c_Index end = Inf<Index>() ) override final;
+     Range range = std::make_pair( 0 , Inf<Index>() ) ,
+	 Index name = Inf<Index>() ) override final;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -329,18 +312,15 @@ class LukFiFunction : public C05Function {
   *
   * This implements the virtual function of class C05Function. */
 
- virtual void get_linearization_coefficients( SparseVector &g ,
-   const LinearizationName name = Inf<LinearizationName>() ,
-   c_Vec_Index & indices = {} , c_Index start = 0 ,
-   c_Index end = Inf<Index>() ) override final {
-
-  throw( std::logic_error( "sparsify is not allowed" ) );
-  }
+ virtual void get_linearization_coefficients( FunctionValue * g ,
+	      c_Subset & subset ,
+	      const bool ordered = false ,
+	      Index name = Inf<Index>() ) override final;
 
 /*--------------------------------------------------------------------------*/
 
  virtual FunctionValue get_linearization_constant(
-		 const LinearizationName name = Inf<Index>() ) override final;
+		 Index name = Inf<Index>() ) override final;
 
 /**@} ----------------------------------------------------------------------*/
 /*------------------- METHODS FOR HANDLING THE PARAMETERS ------------------*/
@@ -388,7 +368,7 @@ class LukFiFunction : public C05Function {
 
 /*--------------------------------------------------------------------------*/
 
- virtual void map_active( c_Vec_p_Var & vars , Vec_Index & map ,
+ virtual void map_active( c_Vec_p_Var & vars , Subset & map ,
 			  const bool ordered = false ) const override final;
 
 /*--------------------------------------------------------------------------*/

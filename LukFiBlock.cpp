@@ -259,7 +259,7 @@ void LukFiBlock::generate_objective( Configuration *objc )
  for( int i = 0 ; i < x.size() ; ++i )
   vars[ i ] = &x[ i ];
 
- f.set_function( new LukFiFunction( NameF , std::move( vars ) , true ) , eNoMod );
+ f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
  //f.set_Block( this );
  set_objective( & f , eNoMod );
 
@@ -351,7 +351,7 @@ void LukFiBlock::deserialize( netCDF::NcGroup & group )
   vars[ i ] = &x[ i ];
   }
 
- f.set_function( new LukFiFunction( NameF , std::move( vars ) , true ) , eNoMod );
+ f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
  f.set_Block( this );
 
  netCDF::NcGroup sg_f = group.getGroup( "lukfi_config" );
@@ -666,21 +666,17 @@ void LukFiBlock::SetInitialPoint( void )
 
 /*--------------------------------------------------------------------------*/
 
-LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars ,
-		const bool ordered )
+LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars )
  :  C05Function() , v_vars( std::move( vars ) )
 {
  NameF = name;
 
  NrCmp = get_dflt_int_par( intNrCmp );
  seed = get_dflt_int_par( intseed );
+ GPMaxSz = get_dflt_int_par( intGPMaxSz );
 
  bQR.clear(); aQR.clear(); cQR.clear();
  FiVal = Inf<double>();
-
- if( ! ordered )
-  std::sort( vars.begin() , vars.end() ,
- 	[]( const auto & p1, const auto & p2 ) { return( p1 < p2 ); } );
 
  } // end ( LukFiFunction::LukFiFunction( ) )  - - - - - - - - - - - - - - - - -
 
@@ -1063,14 +1059,13 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 /*--------------------------------------------------------------------------*/
 
 void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * g ,
-   const LinearizationName name ,
-   c_Vec_Index & indices , c_Index start , c_Index end )
+	     Range range  , Index name  )
 {
- c_Index end_p = std::min( Index( v_vars.size() ) , end );
- if( end_p <= start )
+ range.second = std::min( range.second , get_num_active_var() );
+ if( range.second <= range.first )
   return;
 
- if( name < Inf<LinearizationName>() )
+ if( name < Inf<Index>() )
   throw( std::logic_error( "the linearization is not available" ) );
 
  // auxiliary variables
@@ -1656,23 +1651,620 @@ switch( NameF ) {
     break;
    }
 
- if( indices.size() ) {
-  for( const auto & i : indices )
-   if( ( i >= start ) && ( i < end_p ) )
-    *(g++) = SubG[ i ];
-  }
- else
-  for( Index i = start ; i < end_p ; ++i )
-   *(g++) = SubG[ i ];
+ for( Index i = range.first ; i < range.second ; i++ )
+  *(g++) = SubG[ i ];
 
  } // end( LukFiFunction::get_linearization_coefficients() ) - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/
 
-Function::FunctionValue LukFiBlock::LukFiFunction::get_linearization_constant(
-		 const LinearizationName name ) {
+void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * g ,
+	    c_Subset & subset , const bool ordered , Index name )
+{
+ if( name < Inf<Index>() )
+  throw( std::logic_error( "the linearization is not available" ) );
 
- if( name != Inf<LinearizationName>() )
+ // auxiliary variables
+
+ double Knst;
+
+ Index FIndex = 0;
+ dblVR1 FiVal_, tempL;
+
+ dblVR3 A16( 5 , dblVR2( 10 , dblVR1( 10 , 0 ) ) );
+ dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
+
+ dblVR1 x( v_vars.size() );
+ for( int i = 0 ; i < v_vars.size() ; i++ )
+  x[ i ] = v_vars[ i ]->get_value();
+
+ // SubG is always in "dense" format
+SubG.resize( x.size() , 0.0 );
+
+switch( NameF ) {
+ // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ case ( 1 ):
+  SubG[1] = double(200) * ( x[1] - x[0] * x[0] );
+  SubG[0] = double(2) * x[0] * ( double(1) - SubG[1] ) - double(2);
+  break;
+ // Crescent    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ case ( 2 ):
+  FiVal_.resize(2);
+  FiVal_[0] = x[0] * x[0]  + ( x[1] - double(1) )
+		 * ( x[1] - double(1) ) + x[1] - double(1);
+  FiVal_[1] = - x[0] * x[0] - ( x[1] - double(1) )
+         * ( x[1] - double(1) ) +  x[1] + double(1);
+  FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+  //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  if (FIndex == 0) {
+   SubG[0] = double(2) * x[0];
+   SubG[1] = double(2) * ( x[1] - double(1) ) + double(1);
+   }
+  else {
+   SubG[0] = - double(2) * x[0];
+   SubG[1] = - double(2) * ( x[1] - double(1) ) + double(1);
+   }
+  break;
+ // CB2   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 3 ):
+    FiVal_.resize(3);
+    FiVal_[0] = x[0] * x[0]
+    		    + std::pow( x[1] , 4 );
+    FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
+	  + ( double(2) - x[1] ) * ( double(2) - x[1] );
+    FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    if (FIndex == 0) {
+     SubG[0] = double(2) * x[0];
+     SubG[1] = double(4) * std::pow( x[1] , 3 );
+	 }
+    else
+     if (FIndex == 1) {
+      SubG[0] = - double(2) * ( double(2) - x[0] );
+      SubG[1] = - double(2) * ( double(2) - x[1] );
+	  }
+	 else {
+	  SubG[0] = - double(2) * exp ( - x[0] + x[1] );
+	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
+	  }
+    break;
+   // CB3   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 4 ):
+    FiVal_.resize(3);
+    FiVal_[0] = std::pow( x[0] , 4 ) + x[1] * x[1];
+    FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
+      + ( double(2) - x[1] ) * ( double(2) - x[1] );
+    FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    if (FIndex == 0) {
+	 SubG[0] = double(4) * std::pow( x[0] , 3 );
+     SubG[1] = double(2) * x[1];
+     }
+    else
+     if (FIndex == 1) {
+	  SubG[0] = - double(2) * ( double(2) - x[0] );
+	  SubG[1] = - double(2) * ( double(2) - x[1] );
+	  }
+     else {
+	  SubG[0] = -double(2) * exp ( - x[0] + x[1] );
+	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
+	  }
+    break;
+   // DEM   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 5 ):
+    FiVal_.resize(3);
+    FiVal_[0] = double(5) * x[0] + x[1];
+    FiVal_[1] = - double(5) * x[0] + x[1];
+    FiVal_[2] = x[0] * x[0] +  x[1] * x[1]
+      + double(4) * x[1];
+    FIndex  = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    if (FIndex == 0) {
+	 SubG[0] = 5;
+	 SubG[1] = 1;
+	 }
+    else
+	 if (FIndex == 1) {
+	  SubG[0] = - 5;
+	  SubG[1] = 1;
+	  }
+	 else {
+	  SubG[0] = double(2) * x[0];
+	  SubG[1] = double(2) * x[1] + double(4);
+	  }
+    break;
+   // QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 6 ):
+    FiVal_.resize(3);
+    FiVal_[0] = x[0] * x[0] + x[1] * x[1];
+    FiVal_[1] = FiVal_[0]
+   	 + double(10) * ( - double(4) * x[0] - x[1] + double(4) );
+    FiVal_[2] = FiVal_[0]
+	  + double(10) * ( - x[0] - double(2) * x[1] + double(6) );
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    SubG[0] = double(2) * x[0];
+    SubG[1] = double(2) * x[1];
+    if (FIndex == 1) {
+     SubG[0] -= 40;
+     SubG[1] -= 10;
+     }
+    else
+     if (FIndex == 2) {
+	  SubG[0] -= 10;
+	  SubG[1] -= 20;
+	  }
+    break;
+   // LQ  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 7 ):
+    FiVal_.resize(2);
+    FiVal_[0] = - x[0] - x[1];
+    FiVal_[1] = - x[0] - x[1] + ( x[0] * x[0]
+      + x[1] * x[1] - double(1) );
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    SubG[0] = - 1;
+    SubG[1] = - 1;
+    if (FIndex == 1) {
+	 SubG[0] += double(2) * x[0];
+	 SubG[1] += double(2) * x[1];
+	 }
+    break;
+   // Mifflin 1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 8 ):
+    FiVal_.resize(2);
+    FiVal_[0] = x[0] * x[0]
+    		    + x[1] * x[1] - double(1);
+    FiVal_[1] = 0;
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    SubG[0] = - 1;
+    SubG[1] =  0;
+    if (FIndex == 0) {
+     SubG[0] += double(40) * x[0];
+     SubG[1] += double(40) * x[1];
+     }
+    break;
+   // Mifflin 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 9 ):
+    FiVal_.resize(2);
+    FiVal_[0] = x[0] * x[0]
+    		    + x[1] * x[1] - double(1);
+    FiVal_[1] = - x[0] * x[0]
+    		    - x[1] * x[1] + double(1);
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    SubG[0] = -double(1) + double(4) * x[0];
+    SubG[1] =  double(4) * x[1];
+    if (FIndex == 0) {
+     SubG[0] += double(3.5) * x[0];
+     SubG[1] += double(3.5) * x[1];
+     }
+    else {
+     SubG[0] -= double(3.5) * x[0];
+     SubG[1] -= double(3.5) * x[1];
+     }
+    break;
+   // Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 10 ):
+    if( x[0] >= std::abs( x[1] ) ) {
+  	 SubG[0] = double(45) * x[0] /
+	           std::sqrt( double(9) * x[0] * x[0]
+  	   + double(16) * x[1] * x[1] );
+     SubG[1] = double(80) * x[1] /
+               std::sqrt( double(9) * x[0] * x[0]
+			  + double(16) * x[1] * x[1] );
+  	 }
+    else
+     if ( x[0] < std::abs( x[1] ) &&  x[0] > double(0) ) {
+      SubG[0] = double(9) * x[0];
+      SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
+      }
+     else {
+      SubG[0] = double(9) * ( double(1) - std::pow( x[0] , 8 ) );
+      SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
+      }
+    break;
+   // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 11 ):
+	FiVal_.resize(8);
+    FiVal_[4] = x[0] * x[0]
+    		    + x[1] * x[1] + double(2)
+	 * x[2] * x[2] + x[3]
+	 * x[3] - double(5) * x[0]
+	 - double(5) * x[1] - double(21) * x[2]
+	 + double(7) * x[3];
+    FiVal_[5] = x[0] * x[0] + x[1]
+    		    * x[1] +  x[2]
+	  * x[2] + x[3] * x[3]
+	  + x[0] - x[1] + x[2]
+      - x[3] - double(8);
+    FiVal_[6] = x[0] * x[0]
+      + double(2) * x[1] * x[1]
+	  + x[2] * x[2]
+	  + double(2) * x[3] * x[3] - x[0]
+	  - x[3] - double(10);
+    FiVal_[7] = x[0] * x[0]
+      + x[1] * x[1] +  x[2]
+	  * x[2] + double(2) * x[0]
+	  - x[1] - x[3] - double(5);
+    FiVal_[0] = FiVal_[4];
+    FiVal_[1] = FiVal_[4] + double(10) * FiVal_[5];
+    FiVal_[2] = FiVal_[4] + double(10) * FiVal_[6];
+    FiVal_[3] = FiVal_[4] + double(10) * FiVal_[7];
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.begin() + 4 ) );
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    SubG[0] = double(2) * x[0] - double(5);
+    SubG[1] = double(2) * x[1] - double(5);
+    SubG[2] = double(4) * x[2] - double(21);
+    SubG[3] = double(2) * x[3] + double(7);
+    if (FIndex == 1) {
+	 SubG[0] += double(10) * ( double(2) * x[0] + double(1) );
+	 SubG[1] += double(10) * ( double(2) * x[1] - double(1) );
+	 SubG[2] += double(10) * ( double(2) * x[2] + double(1) );
+	 SubG[3] += double(10) * ( double(2) * x[3] - double(1) );
+	 }
+    else
+	 if (FIndex == 2) {
+      SubG[0] += double(10) * ( double(2) * x[0] - double(1) );
+      SubG[1] += double(40) * x[1];
+      SubG[2] += double(20) * x[2];
+      SubG[3] += double(10) * ( double(4) * x[3] - double(1) );
+	  }
+	 else
+	  if (FIndex == 3) {
+	   SubG[0] += double(10) * ( double(2) * x[0] + double(2) );
+	   SubG[1] += double(10) * ( double(2) * x[1] - double(1) );
+	   SubG[2] += double(20) * x[2];
+	   SubG[3] -= double(10);
+	   }
+    break;
+   // Shor  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 12 ):
+    FiVal_.resize(10);
+    for( Index i = 0; i < 10; i++ ) {
+     FiVal_[i] = 0;
+     for( Index j = 0; j < 5; j++ )
+      FiVal_[i] += b12[ i ] * ( x[ j ] - A12[ i ][ j ] )
+        * ( x[ j ] - A12[ i ][ j ] );
+     }
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    for ( Index j = 0; j < 5; j++ )
+     SubG[j] = double(2) * b12[ FIndex ] * ( x[j] - A12[ FIndex ][ j ] );
+    break;
+   // Maxquad - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 13 ):
+    for( Index i = 1; i <= 5 ; i ++ )
+     for( Index j = 1; j <= 10 ; j++ ) {
+      for( Index k = j + 1; k <= 10; k++ ) {
+       A16[ i -1 ][ j -1  ][ k - 1 ] = exp( double( j ) / double( k ) )
+         * cos( j * k ) * sin( i );
+       A16[ i - 1 ][ k - 1 ][ j - 1 ] = A16[ i -1 ][ j -1  ][ k - 1 ];
+       }
+      A16[ i - 1 ][ j - 1 ][ j - 1 ] = ( double( j ) / double( 10 ) )
+        * std::abs( sin( i ) );
+      for( Index k = 1; k <= 10; k++ )
+       if( j != k )
+        A16[ i - 1 ][ j - 1 ][ j - 1 ] += std::abs( A16[ i - 1 ][ j - 1 ][ k - 1 ] );
+      }
+    for( Index i = 1; i <= 5; i++ )
+     for( Index j = 1; j <= 10; j++ )
+      b16[ i - 1 ][ j - 1 ] = exp( double( j ) / double(i) ) * sin( i * j );
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    FiVal_.resize(5);
+    for( Index i = 0; i < 5 ; i++ ) {
+     FiVal_[i] = 0;
+     for( Index k = 0; k < 10; k++ )
+       FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
+        A16[ i ][ k ].end() , x.begin() , 0 );
+      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+     }
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    for ( Index k = 0; k < 10 ; k ++ )
+     SubG[k] = double( 2 ) * std::inner_product( A16[ FIndex ][ k ].begin() ,
+    	A16[ FIndex ][ k ].end() , x.begin() , 0 ) - b16[ FIndex ][ k ];
+    break;
+   // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 14 ):
+    FiVal_.resize(20);
+    for( Index i = 0; i < 20; i++ )
+     FiVal_[i] = x[i] * x[i];
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    SubG[ FIndex ] = double(2) * x[ FIndex ];
+    break;
+   // Maxl  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 15 ):
+    FiVal_.resize(20);
+    for ( Index i = 0; i < 20; i++ )
+     FiVal_[ i ] = std::abs( x[ i ] );
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    SubG[FIndex] = ( x[FIndex] >= double(0) )? double(1): - double(1);
+    break;
+   // TR48  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case ( 16 ):
+    FiVal_.resize(48);
+    for( Index j = 0; j < 48; j++ ) {
+     for( Index i = 0; i < 48 ; i++ )
+      FiVal_[ i ] = x[ i ] - A21[ i ][ j ];
+     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+     SubG[ FIndex ] += d21[ j ];
+     SubG[ j ] -= s21[ j ];
+     }
+    break;
+   // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 17 ):
+   FiVal_.resize(10);
+   for( Index i = 0; i < 10; i++ )
+    FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() ,
+                x.begin() , 0 );
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   for ( Index j = 0; j < 5; j++ )
+    SubG[j] = double(3) * d13[j] * x[j] * x[j] + e13[j]
+         + double(2) * std::inner_product( C13[j].begin() , C13[j].end() ,
+           x.begin() , 0 );
+   if( FiVal_[FIndex] >  double(0) )
+   for ( Index j = 0; j < x.size() ; j++ )
+    SubG[j] += double(50) * A13[ FIndex ][ j ];
+   break;
+  // HS78  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case( 18 ):
+   FiVal_.resize(3);
+   FiVal_[0] = std::pow( double(x[0]) , 2 )
+             + std::pow( double(x[1]) , 2 )
+             + std::pow( double(x[2]) , 2 )
+             + std::pow( double(x[3]) , 2 )
+             + std::pow( double(x[4]) , 2 ) - double(10);
+   FiVal_[1] = double(x[1]) * double(x[2])
+                   - double(5) * double(x[3]) * double(x[4]);
+   FiVal_[2] = std::pow( double(x[0]) , 3 ) + std::pow( double(x[1]) , 3 ) + double(1) ;
+   SubG[0] = x[1] * x[2]
+                        * x[3] * x[4];
+   SubG[1] = x[0] * x[2]
+                       * x[3] * x[4];
+   SubG[2] = x[0] * x[1]
+                       * x[3] * x[4];
+   SubG[3] = x[0] * x[1]
+                       * x[2] * x[4];
+   SubG[4] = x[0] * x[1]
+                       * x[2] * x[3];
+   if (FiVal_[0] == std::max( FiVal_[0], -FiVal_[0])) {
+    SubG[0] += double(20) * x[0];
+    SubG[1] += double(20) * x[1];
+    SubG[2] += double(20) * x[2];
+    SubG[3] += double(20) * x[3];
+    SubG[4] += double(20) * x[4];
+    }
+   else {
+    SubG[0] -= double(20) * x[0];
+    SubG[1] -= double(20) * x[1];
+    SubG[2] -= double(20) * x[2];
+    SubG[3] -= double(20) * x[3];
+    SubG[4] -= double(20) * x[4];
+    }
+   if( FiVal_[1] == std::max( FiVal_[1], -FiVal_[1]) ) {
+    SubG[1] += double(10) * x[2];
+    SubG[2] += double(10) * x[1];
+    SubG[3] -= double(50) * x[4];
+    SubG[4] -= double(50) * x[3];
+    }
+   else {
+    SubG[1] -= double(10) * x[2];
+    SubG[2] -= double(10) * x[1];
+    SubG[3] += double(50) * x[4];
+    SubG[4] += double(50) * x[3];
+    }
+   if( FiVal_[2] == std::max( FiVal_[2], -FiVal_[2]) ) {
+    SubG[0] += double(30) * std::pow( x[0], 2);
+    SubG[1] += double(30) * std::pow( x[1], 2);
+    }
+   else {
+    SubG[0] -= double(30) * std::pow( x[0], 2);
+    SubG[1] -= double(30) * std::pow( x[1], 2);
+    }
+   break;
+  // Gill    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case( 20 ):
+   FiVal_.resize(3);
+   FiVal_[0] = 0;
+   for ( Index i = 0; i < x.size(); i++ )
+    FiVal_[0] += std::pow( x[i] - double(1), 2 ) + 1e-3
+                    * std::pow( std::pow( x[i] , 2 ) - 0.25 , 2 );
+   FiVal_[1] = std::pow( x[0] , 2 ) + std::pow( x[1]
+      	   	      - std::pow( x[0] , 2 ) - double(1) , 2);
+   double FiVal1;
+   double FiVal2;
+   for( Index i = 1; i < 30; i++ ) {
+    FiVal1 = 0;
+    FiVal2 = 0;
+    for( Index j = 0; j < x.size(); j++ ) {
+     FiVal2 += x[j] * ( j ) * std::pow( ( double(i) / 29) , j-1 );
+     FiVal1 += x[j] * std::pow( ( double(i) / 29) , j );
+     }
+    FiVal2 -=  std::pow( FiVal1 , 2 ) +  double(1);
+    FiVal_[1] += std::pow( FiVal2 , 2 );
+    }
+   FiVal_[2] = 0;
+   for( Index i = 1; i < x.size(); i++ )
+    FiVal_[2] += double(100) * std::pow( x[i]
+    		     - std::pow( x[i-1] , 2 ) , 2 )
+                    + std::pow( double(1) - x[i] , 2 );
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+
+   if( FIndex == 0 )
+    for( Index i = 0; i < x.size() ; i++ )
+       SubG[i] = double(2) * ( x[i] - double(1) ) + 4e-3
+                         * std::pow( std::pow( x[i] , 2 ) - 0.25, 2 )
+                            * x[i];
+   else
+    if( FIndex == 1 ) {
+     double GiVal1;
+     for( Index i = 1; i < 30; i++ )
+     for( Index j = 0; j < x.size() ; j++ ) {
+     SubG[j] = 0;
+     GiVal1 = 0;
+     for( Index k = 0; k < x.size(); k++ ) {
+      GiVal1 += x[k] * std::pow( ( double(i) / 29) , k );
+      SubG[j] += x[k] * ( k ) * std::pow( ( double(i) / 29 ) , k-1 );
+      }
+     SubG[j] -= std::pow( GiVal1 , 2 ) +  double(1);
+     SubG[j] *= double(2) * ( x[j] * ( j )
+                             * std::pow( ( double(i) / 29) , j-1 ) - double(2)
+                             * GiVal1 * std::pow( ( double(i) / 29 ) , j-1 ) );
+     }
+    SubG[0] += double(2) * x[0] - double(4) *
+                    ( x[1] - std::pow( x[0] , 2 ) - double(1) )
+                           * x[0];
+    SubG[1] += double(2) * ( x[1] - std::pow( x[0] , 2 ) - double(1) );
+    }
+   else {
+    for ( Index i = 1 ; i < x.size() ; i++ )
+      SubG[i] += double(200) * ( x[i] - std::pow( x[i-1],2 ) )
+                 + double(-2) * ( double(1) - x[i] ) - double(400)
+                 * ( x[i+1] - std::pow( x[i] , 2 ) ) * x[i];
+    SubG[0] += - double(400) * ( x[1] - std::pow( x[0] , 2 ) ) * x[0];
+    }
+   break;
+  // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case( 22 ):
+   FiVal_.resize(x.size());
+   for ( Index i = 0; i < x.size() ; i++ )
+	FiVal_[i] = x[i];
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   SubG[FIndex] = double(50);
+   for ( Index i = 0; i < x.size() ; i++ )
+    SubG[i] -= double(1);
+   break;
+  // MXHILB
+  case ( 23 ): {
+   FiVal_.resize(x.size());
+   dblVR1 b(x.size() , 0.0 );
+   for ( Index i = 0; i < x.size(); i++ ) {
+    FiVal_[i] = 0;
+    for ( Index j = 0; j < x.size() ; j++ )
+     FiVal_[i] += x[j] / double( (i+1) + (j+1) -1 );
+    if ( FiVal_[i] >= double(0) )
+     b[i] = double(1);
+    else
+      b[i] = -double(1);
+    FiVal_[i] = std::abs(FiVal_[i]);
+    }
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   for ( Index j = 0; j < x.size() ; j++ )
+    SubG[j] = b[FIndex] / ( (FIndex+1) + (j+1) -1 );
+   break;
+   }
+  // L1HILB
+  case ( 24 ): {
+   FiVal_.resize(x.size());
+   dblVR1 b(x.size() , 0.0 );
+   for( Index i = 0; i < x.size(); i++ ) {
+    FiVal_[i] = double(0);
+    for ( Index j = 0; j < x.size(); j++ )
+     FiVal_[i] += x[j] / ( (i+1) + (j+1) -1 );
+    if ( FiVal_[i] >= double(0) )
+     b[i] = double(1);
+    else
+     b[i] = -double(1);
+    }
+    for ( Index i = 0; i < x.size(); i++ )
+     for ( Index j = 0; j < x.size(); j++ )
+      SubG[j] += b[i] / double( (i+1) + (j+1) -1 );
+    break;
+   }
+   // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case( 26 ):
+    for( Index i = 0; i < x.size() ; i++ )
+     SubG[ i ] = x[ i ];
+    break;
+   // AbsVal   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case( 27 ):
+    for( Index i = 0; i < x.size() ; i++ )
+     if( x[ i ] >= 0 )
+      SubG[ i ] = 1;
+     else
+      SubG[ i ] = -1;
+    break;
+   // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case( 28 ) :
+    tempL.resize( x.size() , 0 );
+    FiVal_.resize( NrCmp );
+    for( Index j = 0; j < NrCmp; j++ ) {
+	 std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(), std::minus<double>() );
+	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , 0 ) );
+	 FiVal_[ j ] += aQR[ j ];
+	 }
+    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+    std::transform( x.begin(), x.end(), cQR[FIndex].begin(), SubG.begin(), std::minus<double>() );
+    Knst = 2.0 * bQR[FIndex];
+    std::transform( SubG.begin(), SubG.end(), SubG.begin(), [ Knst ](const auto & p1){ return( p1 * Knst ); } );
+    break;
+   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   case( 29 ):
+    if( x[ 1 ] <= 0) {
+     SubG[ 0 ] = 2.0 * x[ 0 ];
+     SubG[ 1 ] = -1;
+     }
+    if( x[ 1 ] > 0 && x[ 1 ] < x[ 0 ] * x[ 0 ] ) {
+     SubG[ 0 ] = 2.0 * x[ 0 ];
+     SubG[ 1 ] = 1;
+     }
+    if( x[ 0 ] * x[ 0 ] > 0 && x[ 0 ] * x[ 0 ] <= x[ 1 ]
+         &&  x[ 1 ] <= 4.0 * x[ 0 ] * x[ 0 ] ) {
+     SubG[ 0 ] = 6.0 * x[ 0 ];
+     SubG[ 1 ] = -1.0;
+     }
+    if( x[ 1 ] > 4.0 * x[ 0 ] * x[ 0 ] ) {
+     SubG[ 0 ] = -10.0 * x[ 0 ];
+     SubG[ 1 ] = 1.0;
+     }
+    break;
+   }
+
+ c_Index num_active_var = get_num_active_var();
+ for( const auto & i : subset ) {
+  if( i >= num_active_var )
+   throw( std::invalid_argument( "LinearFunction::get_linearization_"
+                                "coefficients: wrong index in subset: " +
+                                std::to_string( i ) ) );
+  *(g++) = SubG[ i ];
+  }
+
+ } // end( LukFiFunction::get_linearization_coefficients() ) - - - - - - - - -
+
+
+/*--------------------------------------------------------------------------*/
+
+Function::FunctionValue LukFiBlock::LukFiFunction::get_linearization_constant(
+		Index name ) {
+
+ if( name != Inf<Index>() )
   throw( std::logic_error( "the linearization is not available" ) );
 
  double value_k = FiVal;
@@ -1687,59 +2279,49 @@ Function::FunctionValue LukFiBlock::LukFiFunction::get_linearization_constant(
 ThinVarDepInterface::Index LukFiBlock::LukFiFunction::is_active( const Variable * const var )
 const
 {
- auto idx = std::lower_bound( v_vars.begin() , v_vars.end() , var ,
-                                []( const auto & p1, const auto & p2 )
-                                  { return p1 < p2 ; } );
- if( idx < v_vars.end() )
-  return( std::distance( v_vars.begin() , idx ) );
- else
-  return( Inf<Index>() );
+ auto idx = std::find_if( v_vars.begin() , v_vars.end() ,
+ 			   [ & var ]( const auto & p ) -> bool {
+ 			    return( p == var );
+ 			    } );
+ return( idx != v_vars.end() ? std::distance( v_vars.begin(), idx )
+ 	                       : Inf< Index >() );
 
  } // end( LukFiFunction::is_active( Variable* ) ) - - - - - - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/
 
-void LukFiBlock::LukFiFunction::map_active( c_Vec_p_Var & vars , Vec_Index & map ,
-		const bool ordered ) const
+void LukFiBlock::LukFiFunction::map_active( c_Vec_p_Var & vars , Subset & map ,
+				 const bool ordered ) const
 {
- if( ! vars.size() )
+ if( vars.empty() )
   return;
-
- // the basic implementation of the method is used whenever vars is not ordered
- //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
- if( ! ordered ) {
-  ThinVarDepInterface::map_active( vars , map );
-  return;
-  }
 
  if( map.size() < vars.size() )
   map.resize( vars.size() );
 
- // construct map vector - - - - - - - - - - - - - - - - - - - - - - - - - - -
- //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
- auto itvb = vars.begin();
-
- auto itvv = std::lower_bound( v_vars.begin() , v_vars.end() ,
-     *itvb , []( const auto & p1 , const auto & p2 )
-	 { return( p1 < p2 ); } );
-
- auto itve = std::upper_bound( itvv , v_vars.end() ,
-	 *(--vars.end()) , []( const auto & p1 , const auto & p2 )
-	 { return( p1 < p2 ); } );
-
- auto itm = map.begin();
- while( itvb < vars.end() ) {
-  if( itvv >= itve )
-   throw( std::invalid_argument( "some Variable is not active" ) );
-
-  *(itm++) = std::distance( v_vars.begin() , itvv );
-  itvv = std::lower_bound( itvv , itve ,  *(++itvb) ,
-     []( const auto & p1, const auto & p2 ) { return( p1 < p2 ); } );
-
-  } // end while - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+ if( ordered ) {
+  Index found = 0;
+  for( Index i = 0 ; i < v_vars.size() ; ++i ) {
+   auto itvi = std::lower_bound( vars.begin() , vars.end() , v_vars[ i ] );
+   if( itvi != vars.end() ) {
+    map[ std::distance( vars.begin() , itvi ) ] = i;
+    ++found;
+    }
+   }
+  if( found < vars.size() )
+   throw( std::invalid_argument( "map_active: some Variable is not active" )
+	  );
+  }
+ else {
+  auto it = map.begin();
+  for( auto var : vars ) {
+   Index i = LukFiBlock::LukFiFunction::is_active( var );
+   if( i >= v_vars.size() )
+    throw( std::invalid_argument( "map_active: some Variable is not active" )
+	   );
+   *(it++) = i;
+   }
+  }
  }  // end( LukFiFunction::map_active( Variable* ) )   - - - - - - - - - - - -
 
 /*--------------------------------------------------------------------------*/

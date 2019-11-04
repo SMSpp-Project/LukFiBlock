@@ -62,6 +62,7 @@ int main( int argc , char **argv )
 
  BlockSolverConfig * bsc = new BlockSolverConfig;
  ProbFile >> *( bsc );
+
  sLukFi->set_SolverConfig( bsc );
  delete bsc;
 
