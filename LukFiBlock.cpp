@@ -296,6 +296,7 @@ void LukFiBlock::load( std::istream &input )
  // generate abstract variables  - - - - - - - - - - - - - - - - - - - - - - -
 
  generate_abstract_variables();
+ SetInitialPoint();
 
  // generate abstract function  - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -350,6 +351,8 @@ void LukFiBlock::deserialize( netCDF::NcGroup & group )
   x[ i ].set_Block( this );
   vars[ i ] = &x[ i ];
   }
+
+ SetInitialPoint();
 
  f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
  f.set_Block( this );
@@ -561,7 +564,7 @@ void LukFiBlock::SetInitialPoint( void )
   // Maxquad   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 13 ):
    for( int i = 0 ; i < x.size() ; i++ )
-	x[ i ].set_value( 1 );
+    x[ i ].set_value( 1 );
    break;
   // Maxq    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 14 ):
@@ -855,27 +858,27 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    for( Index i = 1; i <= 5 ; i ++ )
     for( Index j = 1; j <= 10 ; j++ ) {
      for( Index k = j + 1; k <= 10; k++ ) {
-      A16[ i -1 ][ j -1  ][ k - 1 ] = exp( double( j ) / double( k ) )
-        * cos( j * k ) * sin( i );
+	  A16[ i -1 ][ j -1  ][ k - 1 ] = exp( double( j ) / double( k ) )
+		        * cos( j * k ) * sin( i );
       A16[ i - 1 ][ k - 1 ][ j - 1 ] = A16[ i -1 ][ j -1  ][ k - 1 ];
-      }
-     A16[ i - 1 ][ j - 1 ][ j - 1 ] = ( double( j ) / double( 10 ) )
-       * std::abs( sin( i ) );
-     for( Index k = 1; k <= 10; k++ )
-      if( j != k )
-       A16[ i - 1 ][ j - 1 ][ j - 1 ] += std::abs( A16[ i - 1 ][ j - 1 ][ k - 1 ] );
-     }
+	  }
+	 A16[ i - 1 ][ j - 1 ][ j - 1 ] = ( double( j ) / double( 10 ) )
+		       * std::abs( sin( i ) );
+	 for( Index k = 1; k <= 10; k++ )
+	  if( j != k )
+	   A16[ i - 1 ][ j - 1 ][ j - 1 ] += std::abs( A16[ i - 1 ][ j - 1 ][ k - 1 ] );
+	 }
    for( Index i = 1; i <= 5; i++ )
     for( Index j = 1; j <= 10; j++ )
-     b16[ i - 1 ][ j - 1 ] = exp( double( j ) / double(i) ) * sin( i * j );
-   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	 b16[ i - 1 ][ j - 1 ] = exp( double( j ) / double(i) ) * sin( i * j );
+   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    FiVal_.resize(5);
    for( Index i = 0; i < 5 ; i++ ) {
     FiVal_[i] = 0;
     for( Index k = 0; k < 10; k++ )
      FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
-     A16[ i ][ k ].end() , x.begin() , 0 );
-    FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+     A16[ i ][ k ].end() , x.begin() , double(0) );
+    FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , double(0) );
     }
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
    break;
@@ -1264,10 +1267,10 @@ switch( NameF ) {
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    case ( 10 ):
     if( x[0] >= std::abs( x[1] ) ) {
-  	 SubG[0] = double(45) * x[0] /
+  	 SubG[0] = (x[0]==0) ? 0 : double(45) * x[0] /
 	           std::sqrt( double(9) * x[0] * x[0]
   	   + double(16) * x[1] * x[1] );
-     SubG[1] = double(80) * x[1] /
+     SubG[1] = (x[1]==0) ? 0 : double(80) * x[1] /
                std::sqrt( double(9) * x[0] * x[0]
 			  + double(16) * x[1] * x[1] );
   	 }
@@ -1375,14 +1378,14 @@ switch( NameF ) {
      FiVal_[i] = 0;
      for( Index k = 0; k < 10; k++ )
        FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
-        A16[ i ][ k ].end() , x.begin() , 0 );
-      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+        A16[ i ][ k ].end() , x.begin() , double(0) );
+      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , double(0) );
      }
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     for ( Index k = 0; k < 10 ; k ++ )
      SubG[k] = double( 2 ) * std::inner_product( A16[ FIndex ][ k ].begin() ,
-    	A16[ FIndex ][ k ].end() , x.begin() , 0 ) - b16[ FIndex ][ k ];
+    	A16[ FIndex ][ k ].end() , x.begin() , double(0) ) - b16[ FIndex ][ k ];
     break;
    // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
