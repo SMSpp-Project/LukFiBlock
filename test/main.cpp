@@ -79,10 +79,34 @@ int main( int argc , char **argv )
 
  int rtrn = slvr->compute( false );
 
- LOGFile << std::endl << std::endl << "Opt. Fi() value = "
-		 << slvr->get_lb() << std::endl;
+ LOGFile << std::endl << std::endl << "f* = "
+		 << slvr->get_lb() << " (optimal value)" << std::endl;
 
- // std::endl << "Total Fi() evaluations = "
+int NumVar = 0;  // count the number of Variable
+ auto v_s_Variable = sLukFi->get_static_variables();
+ for( auto & el : v_s_Variable ) {
+  if( un_any_thing_0( ColVariable , el , ++NumVar ) )
+   break;
+  if( un_any_thing_1( ColVariable , el , NumVar += var.size() ) )
+   break;
+  if( un_any_thing_K( ColVariable , el , NumVar += var.size() ) )
+   break;
+  throw( std::logic_error( "some static Variable is not a ColVariable" ) );
+  }
+
+ std::vector<ColVariable *> x( NumVar );
+ Index count = 0;
+ for( auto & el : v_s_Variable )
+  un_any_static( el , [ & ]( ColVariable & static_var ) {
+                       x[ count++ ] = & static_var;
+                       } ,
+		  un_any_type<ColVariable>() );
+
+ count = 0;
+ LOGFile << std::endl << "x* = "<< std::endl;
+ for( auto & var : x )
+ LOGFile  << "[" << count++ << "] "
+		  << var->get_value() << endl;
 
  delete sLukFi;
 

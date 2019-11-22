@@ -67,7 +67,125 @@ namespace SMSpp_di_unipi_it
 /*--------------------------------------------------------------------------*/
 /*--------------------------- GENERAL NOTES --------------------------------*/
 /*--------------------------------------------------------------------------*/
-/// implementation of a simple LukFi Block concept
+/// Implementation of a simple LukFi Block concept.
+ /* In the sequel is reported the optimal value of the implemented
+    functions. For a detailed description we refer to the paper
+    "Piecewise-quadratic approximations in convex numerical optimization"
+     Siam Journal on Optimization. 21(4):1418-1438
+    by A. Astorino, F. Frangioni, M. Gaudioso and E. Gorgone
+
+
+  1. Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = 0
+
+  2. Crescent    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = 0
+
+  3. CB2 (Charalambous/Bandler)  - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 1.9522245
+
+  4. CB3 (Charalambous/Bandler)  - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 2
+
+  5. DEM (Demyanov/Malozemov)  - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -3
+
+  6. QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 7.20
+
+  7. LQ    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -1.4142136
+
+  8. Mifflin1      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -1
+
+  9. Mifflin2      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = -1
+
+  10. Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -8
+
+  11. Rosen-Suzuki    - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -44
+
+  12. Shor    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 22.600162
+
+  13. Maxquad   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = -0.8414083
+
+  14. Maxq    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  15. Maxl    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  16. TR48    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = - 638565.0
+
+  17. Colville1   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = -32.348679
+
+  18. HS78  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = -2.9197004
+
+  19. El-Attar  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = 0.5598131
+
+  20. Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = 9.7857
+
+  21. Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - nonconvex
+     opt. value = 16.703838
+
+  22. Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  23. MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  24. L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  25. smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  26. AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0
+
+  27. MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = not defined
+
+  28. Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     - convex
+     opt. value = 0       */
 
 class LukFiBlock : public Block {
 
