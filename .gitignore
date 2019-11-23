@@ -9,3 +9,4 @@ test/LukFiMain
 .cproject
 .DS_Store
 test/cplex.log
+test/log.bn
