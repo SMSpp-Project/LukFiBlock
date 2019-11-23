@@ -8,7 +8,7 @@
  *
  * \version 0.01
  *
- * \date 16 - 07 - 2019
+ * \date 23 - 11 - 2019
  *
  * \author Antonio Frangioni \n
  *         Operations Research Group \n
@@ -147,43 +147,35 @@ namespace SMSpp_di_unipi_it
      - nonconvex
      opt. value = -2.9197004
 
-  19. El-Attar  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-     - nonconvex
-     opt. value = 0.5598131
-
-  20. Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  19. Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - nonconvex
      opt. value = 9.7857
 
-  21. Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-     - nonconvex
-     opt. value = 16.703838
-
-  22. Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  20. Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0
 
-  23. MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  21. MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0
 
-  24. L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  22. L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0
 
-  25. smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  23. smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0
 
-  26. AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  24. AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0
 
-  27. MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  25. MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = not defined
 
-  28. Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  26. Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - convex
      opt. value = 0       */
 

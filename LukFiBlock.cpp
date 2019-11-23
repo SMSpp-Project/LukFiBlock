@@ -6,7 +6,7 @@
  *
  * \version 0.01
  *
- * \date 16 - 07 - 2019
+ * \date 23 - 11 - 2019
  *
  * \author Antonio Frangioni \n
  *         Operations Research Group \n
@@ -452,39 +452,31 @@ void LukFiBlock::SetDimension( int n )
   case( 18 ):
    n = int (5);
    break;
-  // El-Attar  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 19 ):
-   n = int (6);
-   break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    n = int (10);
    break;
-  // Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 21 ):
-   n = int (12);
-   break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    n = int (50);
    break;
   // MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 23 ):
+  case( 21 ):
    n = int (50);
    break;
   // L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 24 ):
+  case( 22 ):
    n = int (50);
    break;
   // smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
+  case( 23 ):
   // AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 24 ):
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 25 ):
    break;
   // Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 26 ):
    n = int( 2 );
    break;
   }  // end( switch )
@@ -606,53 +598,43 @@ void LukFiBlock::SetInitialPoint( void )
    x[ 0 ].set_value( -2 );  x[ 1 ].set_value( 1.5 );  x[ 2 ].set_value( 2 );
    x[ 3 ].set_value( -1 );  x[ 4 ].set_value( -1 );
    break;
-  // El-Attar    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 19 ):
-   x[ 0 ].set_value( 2 );  x[ 1 ].set_value( 2 );  x[ 2 ].set_value( 7 );
-   x[ 4 ].set_value( 0 );  x[ 5 ].set_value( -2 ); x[ 6 ].set_value( 1 );
-   break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    for ( int i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( -0.1 );
    break;
-  // Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 21 ):
-   for ( int i = 0 ; i < x.size() ; i++ )
-  	x[ i ].set_value( 0 );
-   break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    for ( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( double( i+1 ) - 25.5 );
    break;
   // MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 23 ):
+  case( 21 ):
    for ( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1 );
    break;
   // L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 24 ):
+  case( 22 ):
    for ( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1 );
    break;
   // smooth    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
+  case( 23 ):
    for( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1.0 );
    break;
   // AbsVal    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 24 ):
    for( int i = 0 ; i < x.size() ; i++ )
    	x[ i ].set_value( -1.0 );
    break;
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 25 ):
    for( int i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1.0 );
    break;
   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 26 ):
    x[ 0 ].set_value( -10 ); x[ 1 ].set_value( -10 );
    break;
   }  // end( switch )
@@ -931,7 +913,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 20 ):
+  case ( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -961,13 +943,13 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 22 ):
+  case ( 20 ):
    FiVal = double(50) * *std::max_element( x.begin() , x.end() )
            - std::accumulate( x.begin() , x.end() , double(0) );
    break;
   // MXHILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 23 ):
+  case ( 21 ):
    FiVal_.resize(x.size());
    for( Index i = 0; i < x.size(); i++ ){
 	FiVal_[i] = double(0);
@@ -979,7 +961,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // L1HILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 24 ):
+  case ( 22 ):
    FiVal_.resize(x.size());
    for ( Index i = 0; i < x.size() ; i++ ) {
 	FiVal_[i] = double(0);
@@ -991,19 +973,19 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
+  case( 23 ):
    for( Index i = 0; i < x.size(); i++ )
 	FiVal +=  0.5 * x[ i ] *  x[ i ];
    break;
   // AbsVal  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 24 ):
    for( Index i = 0; i < x.size() ; i++ )
    	FiVal += std::abs( x[ i ] );
    break;
   // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 25 ):
    srand48( seed );
    bQR.resize( NrCmp );
    aQR.resize( NrCmp );
@@ -1030,7 +1012,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 
   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 26 ):
    if( x[ 1 ] <= 0)
 	FiVal = x[ 0 ] * x[ 0 ] - x[ 1 ];
    if( x[ 1 ] > 0 && x[ 1 ] < x[ 0 ] * x[ 0 ] )
@@ -1074,7 +1056,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * 
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
-SubG.resize( x.size() , double(0) );
+SubG.assign( x.size() , double(0) );
 
 switch( NameF ) {
  // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1480,7 +1462,7 @@ switch( NameF ) {
    break;
   // Gill    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -1543,7 +1525,7 @@ switch( NameF ) {
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    FIndex = std::distance( x.begin() , std::max_element( x.begin() , x.end() ) );
    SubG[FIndex] = double(50);
    for ( Index i = 0; i < x.size() ; i++ )
@@ -1551,7 +1533,7 @@ switch( NameF ) {
    break;
   // MXHILB - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 23 ): {
+  case ( 21 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for ( Index i = 0; i < x.size(); i++ ) {
@@ -1571,7 +1553,7 @@ switch( NameF ) {
    }
   // L1HILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 24 ): {
+  case ( 22 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for( Index i = 0; i < x.size(); i++ ) {
@@ -1590,13 +1572,13 @@ switch( NameF ) {
    }
    // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 25 ):
+   case( 23 ):
     for( Index i = 0; i < x.size() ; i++ )
      SubG[ i ] = x[ i ];
     break;
    // AbsVal   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 26 ):
+   case( 24 ):
     for( Index i = 0; i < x.size() ; i++ )
      if( x[ i ] >= 0 )
       SubG[ i ] = 1;
@@ -1605,7 +1587,7 @@ switch( NameF ) {
     break;
    // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 27 ) :
+   case( 25 ) :
     tempL.resize( x.size() , 0 );
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
@@ -1620,7 +1602,7 @@ switch( NameF ) {
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 28 ):
+   case( 26 ):
     if( x[ 1 ] <= 0) {
      SubG[ 0 ] = 2.0 * x[ 0 ];
      SubG[ 1 ] = -1;
@@ -1669,7 +1651,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * 
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
-SubG.resize( x.size() , 0.0 );
+SubG.assign( x.size() , 0.0 );
 
 switch( NameF ) {
  // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2075,7 +2057,7 @@ switch( NameF ) {
   break;
   // Gill    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -2138,7 +2120,7 @@ switch( NameF ) {
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    FIndex = std::distance( x.begin() , std::max_element( x.begin() , x.end() ) );
    SubG[FIndex] = double(50);
    for ( Index i = 0; i < x.size() ; i++ )
@@ -2146,7 +2128,7 @@ switch( NameF ) {
    break;
   // MXHILB - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 23 ): {
+  case ( 21 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for ( Index i = 0; i < x.size(); i++ ) {
@@ -2165,7 +2147,7 @@ switch( NameF ) {
    break;
    }
   // L1HILB
-  case ( 24 ): {
+  case ( 22 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for( Index i = 0; i < x.size(); i++ ) {
@@ -2184,13 +2166,13 @@ switch( NameF ) {
    }
    // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 25 ):
+   case( 23 ):
     for( Index i = 0; i < x.size() ; i++ )
      SubG[ i ] = x[ i ];
     break;
    // AbsVal   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 26 ):
+   case( 24 ):
     for( Index i = 0; i < x.size() ; i++ )
      if( x[ i ] >= 0 )
       SubG[ i ] = 1;
@@ -2199,7 +2181,7 @@ switch( NameF ) {
     break;
    // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 27 ) :
+   case( 25 ) :
     tempL.resize( x.size() , 0 );
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
@@ -2214,7 +2196,7 @@ switch( NameF ) {
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 28 ):
+   case( 26 ):
     if( x[ 1 ] <= 0) {
      SubG[ 0 ] = 2.0 * x[ 0 ];
      SubG[ 1 ] = -1;
