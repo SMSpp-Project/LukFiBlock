@@ -7,12 +7,16 @@
  *
  * \version 0.10
  *
- * \date 23 - 07 - 2018
+ * \date 23 - 11 - 2018
  *
  * \author Antonio Frangioni \n
  *         Operations Research Group \n
  *         Dipartimento di Informatica \n
  *         Universita' di Pisa \n
+ *
+ * \author Enrico Gorgone \n
+ *         Dipartimento di Matematica ed Informatica \n
+ *         Universita' di Cagliari \n
  *
  * Copyright &copy by Antonio Frangioni
  */
@@ -79,10 +83,8 @@ int main( int argc , char **argv )
 
  int rtrn = slvr->compute( false );
 
- LOGFile << std::endl << std::endl << "Opt. Fi() value = "
-		 << slvr->get_lb() << std::endl;
-
- // std::endl << "Total Fi() evaluations = "
+ LOGFile << std::endl << std::endl << "f* = "
+		 << slvr->get_lb() << " (optimal value)" << std::endl;
 
  delete sLukFi;
 

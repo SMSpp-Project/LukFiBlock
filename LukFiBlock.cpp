@@ -6,7 +6,7 @@
  *
  * \version 0.01
  *
- * \date 16 - 07 - 2019
+ * \date 24 - 11 - 2019
  *
  * \author Antonio Frangioni \n
  *         Operations Research Group \n
@@ -128,16 +128,19 @@ LukFiBlock::LukFiFunction::dblVR2 A21 = {
  { 1718 , 1475 , 781 , 1600 , 875 , 264 , 138 , 177 , 738 , 595 , 1472 , 592 , 514 , 303 , 1326 , 1508 , 898 , 354 , 1828 , 1042 , 1403 , 567 , 928 , 998 , 641 , 1038 , 2336 , 603 , 923 , 1212 , 861 , 739 , 1187 , 194 , 1021 , 220 , 2044 , 268 , 2281 , 519 , 796 , 1835 , 1553 , 2435 , 2238 , 2010 , 100000 , 1157 } ,
  { 604 , 335 , 678 , 930 , 552 , 1398 , 1023 , 1327 , 945 , 853 , 588 , 598 , 661 , 853 , 236 , 550 , 396 , 813 , 674 , 741 , 442 , 591 , 921 , 216 , 676 , 231 , 1266 , 582 , 341 , 1176 , 626 , 515 , 548 , 1231 , 352 , 1163 , 932 , 917 , 1531 , 972 , 361 , 917 , 486 , 1461 , 1560 , 1353 , 1157 , 100000 }
 };
+
 // vector dblVR1 of size [48]
-LukFiBlock::LukFiFunction::dblVR1 s21 = { 22 , 53 , 64 , 15 , 66 , 37 , 16 ,23 , 67 , 18 , 52 ,
+LukFiBlock::LukFiFunction::dblVR1 s21 =  { 22 , 53 , 64 , 15 , 66 , 37 , 16 ,23 , 67 , 18 , 52 ,
  69 , 17 , 29 , 50 , 13 , 95 , 34 , 59 , 36 , 22 , 94 , 28 , 34 , 36 , 38 ,
  55 , 77 , 45 , 34 , 32 , 58 , 30 , 88 , 74 , 59 , 93 , 54 , 89 , 30 , 79 ,
  46 , 35 , 41 , 99 , 52 , 76 , 93 };
+
 // vector dblVR1 of size [48]
 LukFiBlock::LukFiFunction::dblVR1 d21 = { 61 , 67 , 24 , 84 , 13 , 86 , 89 , 46 , 48 , 50 , 74 ,
  75 , 88 , 40 , 29 , 45 , 32 , 21 , 61 , 21 , 51 , 14 , 89 , 79, 38 , 20 ,
  97 , 19 , 10 , 73 , 59 , 92 , 52 , 66 , 89 , 65 , 63 , 47 , 7 , 61 , 87 ,
  19 , 36 , 43 , 9 , 12 , 8 , 67 };
+
 
 /*--------------------------------------------------------------------------*/
 /*------------------------------ MACROS ------------------------------------*/
@@ -296,6 +299,7 @@ void LukFiBlock::load( std::istream &input )
  // generate abstract variables  - - - - - - - - - - - - - - - - - - - - - - -
 
  generate_abstract_variables();
+ SetInitialPoint();
 
  // generate abstract function  - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -350,6 +354,8 @@ void LukFiBlock::deserialize( netCDF::NcGroup & group )
   x[ i ].set_Block( this );
   vars[ i ] = &x[ i ];
   }
+
+ SetInitialPoint();
 
  f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
  f.set_Block( this );
@@ -446,43 +452,31 @@ void LukFiBlock::SetDimension( int n )
   case( 18 ):
    n = int (5);
    break;
-  // El-Attar  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 19 ):
-   n = int (6);
-   break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    n = int (10);
    break;
-  // Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 21 ):
-   n = int (12);
-   break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    n = int (50);
    break;
   // MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 23 ):
+  case( 21 ):
    n = int (50);
    break;
   // L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 24 ):
+  case( 22 ):
    n = int (50);
    break;
-  // Shell Dual  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
-   n = int (15);
-   break;
   // smooth     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 23 ):
   // AbsVal     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 24 ):
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 25 ):
    break;
   // Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 29 ):
+  case( 26 ):
    n = int( 2 );
    break;
   }  // end( switch )
@@ -561,7 +555,7 @@ void LukFiBlock::SetInitialPoint( void )
   // Maxquad   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 13 ):
    for( int i = 0 ; i < x.size() ; i++ )
-	x[ i ].set_value( 1 );
+    x[ i ].set_value( 1 );
    break;
   // Maxq    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 14 ):
@@ -579,20 +573,20 @@ void LukFiBlock::SetInitialPoint( void )
    break;
   // TR48    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 16 ):
-   for( int i = 0 ; i < x.size() ; i++ )
-   x[ i ].set_value( 0 ); /*
-   x[0]  =  11.19; x[1]  =  127.2; x[2]  = -129.7; x[3]  =  344.5;
-   x[4]  = -40.72; x[5]  = -295.3; x[6]  = -202.3; x[7]  = -382.3;
-   x[8]  = -217.7; x[9]  = -307.7; x[10] =  178.1; x[11] =  -4.36;
-   x[12] = -123.3; x[13] = -265.3; x[14] =  28.28; x[15] =  70.57;
-   x[16] = -31.81; x[17] = -222.3; x[18] =  96.19; x[19] = -52.79;
-   x[20] = -34.71; x[21] = -59.16; x[22] = -373.7; x[23] = -28.35;
-   x[24] = -141.7; x[25] =   2.28; x[26] =  198.5; x[27] = -69.16;
-   x[28] = -26.35; x[29] = -88.72; x[30] =  130.8; x[31] = -12.35;
-   x[32] =  -30.7; x[33] = -376.3; x[34] =  23.18; x[35] = -400.3;
-   x[36] =  197.1; x[37] = -260.3; x[38] =  813.5; x[39] = -191.7;
-   x[40] =  31.29; x[41] =  345.5; x[42] =  -7.72; x[43] =  335.5;
-   x[44] =  947.5; x[45] =  722.5; x[46] = -300.3; x[47] =   73.2; */
+   // for( int i = 0 ; i < x.size() ; i++ )
+   // x[ i ].set_value( 0 );
+   x[0].set_value( 11.19 ); x[1].set_value( 127.2 ); x[2].set_value( -129.7 ); x[3].set_value( 344.5 );
+   x[4].set_value( -40.72 ); x[5].set_value( -295.3 ); x[6].set_value( -202.3 ); x[7].set_value( -382.3 );
+   x[8].set_value( -217.7 ); x[9].set_value( -307.7 ); x[10].set_value( 178.1 ); x[11].set_value( -4.36 );
+   x[12].set_value( -123.3 ); x[13].set_value( -265.3 ); x[14].set_value( 28.28 ); x[15].set_value( 70.57 );
+   x[16].set_value( -31.81 ); x[17].set_value( -222.3 ); x[18].set_value( 96.19 ); x[19].set_value( -52.79 );
+   x[20].set_value( -34.71 ); x[21].set_value( -59.16 ); x[22].set_value( -373.7 ); x[23].set_value( -28.35 );
+   x[24].set_value( -141.7 ); x[25].set_value( 2.28 ); x[26].set_value( 198.5 ); x[27].set_value( -69.16 );
+   x[28].set_value( -26.35 ); x[29].set_value( -88.72 ); x[30].set_value( 130.8 ); x[31].set_value( -12.35 );
+   x[32].set_value( -30.7 ); x[33].set_value( -376.3 ); x[34].set_value( 23.18 ); x[35].set_value( -400.3 );
+   x[36].set_value( 197.1 ); x[37].set_value( -260.3 ); x[38].set_value( 813.5 ); x[39].set_value( -191.7 );
+   x[40].set_value( 31.29 ); x[41].set_value( 345.5 ); x[42].set_value( -7.72 ); x[43].set_value( 335.5 );
+   x[44].set_value( 947.5 ); x[45].set_value( 722.5 ); x[46].set_value( -300.3 ); x[47].set_value( 73.2 );
    break;
   // Colville1   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 17 ):
@@ -604,61 +598,43 @@ void LukFiBlock::SetInitialPoint( void )
    x[ 0 ].set_value( -2 );  x[ 1 ].set_value( 1.5 );  x[ 2 ].set_value( 2 );
    x[ 3 ].set_value( -1 );  x[ 4 ].set_value( -1 );
    break;
-  // El-Attar    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 19 ):
-   x[ 0 ].set_value( 2 );  x[ 1 ].set_value( 2 );  x[ 2 ].set_value( 7 );
-   x[ 4 ].set_value( 0 );  x[ 5 ].set_value( -2 ); x[ 6 ].set_value( 1 );
-   break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    for ( int i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( -0.1 );
    break;
-  // Steiner2  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 21 ):
-   for ( int i = 0 ; i < x.size() ; i++ )
-  	x[ i ].set_value( 0 );
-   break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
+  case( 20 ):
    for ( int i = 0 ; i < x.size() ; i++ )
-	x[ i ].set_value( ( i+1 ) - 25.5 );
+	x[ i ].set_value( double( i+1 ) - 25.5 );
    break;
   // MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 23 ):
+  case( 21 ):
    for ( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1 );
    break;
   // L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 24 ):
+  case( 22 ):
    for ( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1 );
    break;
-  // Shell Dual  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
-   for ( int i = 0 ; i < x.size() ; i++ )
-	if( i != 6 )
-	 x[ i ].set_value( 1e-4 );
-	else
-     x[ i ].set_value( 60 );
-   break;
   // smooth    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 23 ):
    for( int i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 1.0 );
    break;
   // AbsVal    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 24 ):
    for( int i = 0 ; i < x.size() ; i++ )
    	x[ i ].set_value( -1.0 );
    break;
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 25 ):
    for( int i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1.0 );
    break;
   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 29 ):
+  case( 26 ):
    x[ 0 ].set_value( -10 ); x[ 1 ].set_value( -10 );
    break;
   }  // end( switch )
@@ -855,27 +831,27 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    for( Index i = 1; i <= 5 ; i ++ )
     for( Index j = 1; j <= 10 ; j++ ) {
      for( Index k = j + 1; k <= 10; k++ ) {
-      A16[ i -1 ][ j -1  ][ k - 1 ] = exp( double( j ) / double( k ) )
-        * cos( j * k ) * sin( i );
+	  A16[ i -1 ][ j -1  ][ k - 1 ] = exp( double( j ) / double( k ) )
+		        * cos( j * k ) * sin( i );
       A16[ i - 1 ][ k - 1 ][ j - 1 ] = A16[ i -1 ][ j -1  ][ k - 1 ];
-      }
-     A16[ i - 1 ][ j - 1 ][ j - 1 ] = ( double( j ) / double( 10 ) )
-       * std::abs( sin( i ) );
-     for( Index k = 1; k <= 10; k++ )
-      if( j != k )
-       A16[ i - 1 ][ j - 1 ][ j - 1 ] += std::abs( A16[ i - 1 ][ j - 1 ][ k - 1 ] );
-     }
+	  }
+	 A16[ i - 1 ][ j - 1 ][ j - 1 ] = ( double( j ) / double( 10 ) )
+		       * std::abs( sin( i ) );
+	 for( Index k = 1; k <= 10; k++ )
+	  if( j != k )
+	   A16[ i - 1 ][ j - 1 ][ j - 1 ] += std::abs( A16[ i - 1 ][ j - 1 ][ k - 1 ] );
+	 }
    for( Index i = 1; i <= 5; i++ )
     for( Index j = 1; j <= 10; j++ )
-     b16[ i - 1 ][ j - 1 ] = exp( double( j ) / double(i) ) * sin( i * j );
-   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	 b16[ i - 1 ][ j - 1 ] = exp( double( j ) / double(i) ) * sin( i * j );
+   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    FiVal_.resize(5);
    for( Index i = 0; i < 5 ; i++ ) {
     FiVal_[i] = 0;
     for( Index k = 0; k < 10; k++ )
      FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
-     A16[ i ][ k ].end() , x.begin() , 0 );
-    FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+     A16[ i ][ k ].end() , x.begin() , double(0) );
+    FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , double(0) );
     }
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
    break;
@@ -899,25 +875,25 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 16 ):
    FiVal_.resize(48);
-   for( Index j = 0; j < 48; j++ ) {
+   for( Index j = 0; j < 48 ; j++ ) {
     for( Index i = 0; i < 48; i++ )
      FiVal_[ i ] = x[ i ] - A21[ i ][ j ];
     FiVal += *std::max_element( FiVal_.begin() , FiVal_.end() ) * d21[ j ];
     }
-   FiVal -= std::inner_product( s21.begin() , s21.end() , x.begin() , 0 );
+   FiVal -= std::inner_product( s21.begin() , s21.end() , x.begin() , double(0) );
    break;
   // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 17 ):
-   FiVal = std::inner_product( e13.begin() , e13.end() , x.begin() , 0 );
+   FiVal = std::inner_product( e13.begin() , e13.end() , x.begin() , double(0) );
    for ( Index j = 0; j < 5; j++)
     FiVal += d13[j] * x[j] * x[j] * x[j];
    for ( Index i = 0; i < 5; i++)
     FiVal += x[i] * std::inner_product( C13[ i ].begin() ,
-     C13[ i ].end() , x.begin() , 0 );
+     C13[ i ].end() , x.begin() , double(0) );
    FiVal_.resize(10);
    for ( Index i = 0; i < 10; i++ )
-    FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() , x.begin() , 0 );
+    FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() , x.begin() , double(0) );
    FiVal += double(50) * std::max( double(0) , *std::max_element( FiVal_.begin() , FiVal_.end() ) );
    break;
   // HS78 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -937,7 +913,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 20 ):
+  case ( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -967,16 +943,13 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 22 ):
-   FiVal_.resize(x.size());
-   for ( Index i = 0; i < x.size() ; i++ )
-	FiVal_[i] =  double(x[i]);
-   FiVal = double(50) * *std::max_element( FiVal_.begin() , FiVal_.end() )
-           - std::accumulate( FiVal_.begin() , FiVal_.end() , 0 );
+  case ( 20 ):
+   FiVal = double(50) * *std::max_element( x.begin() , x.end() )
+           - std::accumulate( x.begin() , x.end() , double(0) );
    break;
   // MXHILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 23 ):
+  case ( 21 ):
    FiVal_.resize(x.size());
    for( Index i = 0; i < x.size(); i++ ){
 	FiVal_[i] = double(0);
@@ -988,7 +961,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   // L1HILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case ( 24 ):
+  case ( 22 ):
    FiVal_.resize(x.size());
    for ( Index i = 0; i < x.size() ; i++ ) {
 	FiVal_[i] = double(0);
@@ -996,23 +969,23 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 	 FiVal_[i] += double(x[j]) / ( (i+1) + (j+1) -1 );
 	FiVal_[i] = std::abs(FiVal_[i]);
 	}
-   FiVal = std::accumulate( FiVal_.begin() , FiVal_.end() , 0 );
+   FiVal = std::accumulate( FiVal_.begin() , FiVal_.end() , double(0) );
    break;
   // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 26 ):
+  case( 23 ):
    for( Index i = 0; i < x.size(); i++ )
 	FiVal +=  0.5 * x[ i ] *  x[ i ];
    break;
   // AbsVal  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 27 ):
+  case( 24 ):
    for( Index i = 0; i < x.size() ; i++ )
    	FiVal += std::abs( x[ i ] );
    break;
   // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 28 ):
+  case( 25 ):
    srand48( seed );
    bQR.resize( NrCmp );
    aQR.resize( NrCmp );
@@ -1031,7 +1004,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
   FiVal_.resize( NrCmp );
    for( Index j = 0; j < NrCmp; j++ ) {
     std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(), std::minus<double>() );
-	FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , 0 ) );
+	FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , double(0) ) );
 	FiVal_[ j ] += aQR[ j ];
     }
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
@@ -1039,7 +1012,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 
   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 29 ):
+  case( 26 ):
    if( x[ 1 ] <= 0)
 	FiVal = x[ 0 ] * x[ 0 ] - x[ 1 ];
    if( x[ 1 ] > 0 && x[ 1 ] < x[ 0 ] * x[ 0 ] )
@@ -1083,7 +1056,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * 
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
-SubG.resize( x.size() , 0.0 );
+SubG.assign( x.size() , double(0) );
 
 switch( NameF ) {
  // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1113,179 +1086,179 @@ switch( NameF ) {
   break;
  // CB2   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 3 ):
-    FiVal_.resize(3);
-    FiVal_[0] = x[0] * x[0]
+ case ( 3 ):
+  FiVal_.resize(3);
+  FiVal_[0] = x[0] * x[0]
     		    + std::pow( x[1] , 4 );
-    FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
+  FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
 	  + ( double(2) - x[1] ) * ( double(2) - x[1] );
-    FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    if (FIndex == 0) {
-     SubG[0] = double(2) * x[0];
-     SubG[1] = double(4) * std::pow( x[1] , 3 );
-	 }
-    else
-     if (FIndex == 1) {
-      SubG[0] = - double(2) * ( double(2) - x[0] );
-      SubG[1] = - double(2) * ( double(2) - x[1] );
-	  }
-	 else {
-	  SubG[0] = - double(2) * exp ( - x[0] + x[1] );
-	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
-	  }
-    break;
-   // CB3   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 4 ):
-    FiVal_.resize(3);
-    FiVal_[0] = std::pow( x[0] , 4 ) + x[1] * x[1];
-    FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
+  FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
+  FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+  //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  if (FIndex == 0) {
+   SubG[0] = double(2) * x[0];
+   SubG[1] = double(4) * std::pow( x[1] , 3 );
+   }
+  else
+   if (FIndex == 1) {
+    SubG[0] = - double(2) * ( double(2) - x[0] );
+    SubG[1] = - double(2) * ( double(2) - x[1] );
+    }
+   else {
+	SubG[0] = - double(2) * exp ( - x[0] + x[1] );
+	SubG[1] = double(2) * exp ( - x[0] + x[1] );
+    }
+  break;
+  // CB3   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 4 ):
+   FiVal_.resize(3);
+   FiVal_[0] = std::pow( x[0] , 4 ) + x[1] * x[1];
+   FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
       + ( double(2) - x[1] ) * ( double(2) - x[1] );
-    FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    if (FIndex == 0) {
-	 SubG[0] = double(4) * std::pow( x[0] , 3 );
-     SubG[1] = double(2) * x[1];
-     }
-    else
-     if (FIndex == 1) {
-	  SubG[0] = - double(2) * ( double(2) - x[0] );
-	  SubG[1] = - double(2) * ( double(2) - x[1] );
-	  }
-     else {
-	  SubG[0] = -double(2) * exp ( - x[0] + x[1] );
-	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
-	  }
-    break;
-   // DEM   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 5 ):
-    FiVal_.resize(3);
-    FiVal_[0] = double(5) * x[0] + x[1];
-    FiVal_[1] = - double(5) * x[0] + x[1];
-    FiVal_[2] = x[0] * x[0] +  x[1] * x[1]
+   FiVal_[2] = double(2) * exp ( - x[0] + x[1] );
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   if (FIndex == 0) {
+    SubG[0] = double(4) * std::pow( x[0] , 3 );
+    SubG[1] = double(2) * x[1];
+    }
+   else
+    if (FIndex == 1) {
+	 SubG[0] = - double(2) * ( double(2) - x[0] );
+	 SubG[1] = - double(2) * ( double(2) - x[1] );
+	 }
+    else {
+	 SubG[0] = -double(2) * exp ( - x[0] + x[1] );
+	 SubG[1] = double(2) * exp ( - x[0] + x[1] );
+	 }
+  break;
+  // DEM   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 5 ):
+   FiVal_.resize(3);
+   FiVal_[0] = double(5) * x[0] + x[1];
+   FiVal_[1] = - double(5) * x[0] + x[1];
+   FiVal_[2] = x[0] * x[0] +  x[1] * x[1]
       + double(4) * x[1];
-    FIndex  = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    if (FIndex == 0) {
-	 SubG[0] = 5;
+   FIndex  = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   if (FIndex == 0) {
+    SubG[0] = 5;
+	SubG[1] = 1;
+	}
+   else
+	if (FIndex == 1) {
+	 SubG[0] = - 5;
 	 SubG[1] = 1;
 	 }
-    else
-	 if (FIndex == 1) {
-	  SubG[0] = - 5;
-	  SubG[1] = 1;
-	  }
-	 else {
-	  SubG[0] = double(2) * x[0];
-	  SubG[1] = double(2) * x[1] + double(4);
-	  }
-    break;
-   // QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 6 ):
-    FiVal_.resize(3);
-    FiVal_[0] = x[0] * x[0] + x[1] * x[1];
-    FiVal_[1] = FiVal_[0]
-   	 + double(10) * ( - double(4) * x[0] - x[1] + double(4) );
-    FiVal_[2] = FiVal_[0]
-	  + double(10) * ( - x[0] - double(2) * x[1] + double(6) );
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SubG[0] = double(2) * x[0];
-    SubG[1] = double(2) * x[1];
-    if (FIndex == 1) {
-     SubG[0] -= 40;
-     SubG[1] -= 10;
-     }
-    else
-     if (FIndex == 2) {
-	  SubG[0] -= 10;
-	  SubG[1] -= 20;
-	  }
-    break;
-   // LQ  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 7 ):
-    FiVal_.resize(2);
-    FiVal_[0] = - x[0] - x[1];
-    FiVal_[1] = - x[0] - x[1] + ( x[0] * x[0]
-      + x[1] * x[1] - double(1) );
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SubG[0] = - 1;
-    SubG[1] = - 1;
-    if (FIndex == 1) {
-	 SubG[0] += double(2) * x[0];
-	 SubG[1] += double(2) * x[1];
+	else {
+	 SubG[0] = double(2) * x[0];
+	 SubG[1] = double(2) * x[1] + double(4);
 	 }
-    break;
-   // Mifflin 1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 8 ):
-    FiVal_.resize(2);
-    FiVal_[0] = x[0] * x[0]
+  break;
+  // QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 6 ):
+   FiVal_.resize(3);
+   FiVal_[0] = x[0] * x[0] + x[1] * x[1];
+   FiVal_[1] = FiVal_[0]
+   	 + double(10) * ( - double(4) * x[0] - x[1] + double(4) );
+   FiVal_[2] = FiVal_[0]
+	  + double(10) * ( - x[0] - double(2) * x[1] + double(6) );
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   SubG[0] = double(2) * x[0];
+   SubG[1] = double(2) * x[1];
+   if (FIndex == 1) {
+    SubG[0] -= 40;
+    SubG[1] -= 10;
+    }
+   else
+    if (FIndex == 2) {
+	 SubG[0] -= 10;
+	 SubG[1] -= 20;
+	 }
+  break;
+  // LQ  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 7 ):
+   FiVal_.resize(2);
+   FiVal_[0] = - x[0] - x[1];
+   FiVal_[1] = - x[0] - x[1] + ( x[0] * x[0]
+      + x[1] * x[1] - double(1) );
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   SubG[0] = - 1;
+   SubG[1] = - 1;
+   if (FIndex == 1) {
+	SubG[0] += double(2) * x[0];
+	SubG[1] += double(2) * x[1];
+	}
+  break;
+  // Mifflin 1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 8 ):
+   FiVal_.resize(2);
+   FiVal_[0] = x[0] * x[0]
     		    + x[1] * x[1] - double(1);
-    FiVal_[1] = 0;
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SubG[0] = - 1;
-    SubG[1] =  0;
-    if (FIndex == 0) {
-     SubG[0] += double(40) * x[0];
-     SubG[1] += double(40) * x[1];
-     }
-    break;
-   // Mifflin 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 9 ):
-    FiVal_.resize(2);
-    FiVal_[0] = x[0] * x[0]
+   FiVal_[1] = 0;
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   SubG[0] = - 1;
+   SubG[1] =  0;
+   if (FIndex == 0) {
+    SubG[0] += double(40) * x[0];
+    SubG[1] += double(40) * x[1];
+    }
+  break;
+  // Mifflin 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 9 ):
+   FiVal_.resize(2);
+   FiVal_[0] = x[0] * x[0]
     		    + x[1] * x[1] - double(1);
-    FiVal_[1] = - x[0] * x[0]
+   FiVal_[1] = - x[0] * x[0]
     		    - x[1] * x[1] + double(1);
-    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SubG[0] = -double(1) + double(4) * x[0];
-    SubG[1] =  double(4) * x[1];
-    if (FIndex == 0) {
-     SubG[0] += double(3.5) * x[0];
-     SubG[1] += double(3.5) * x[1];
-     }
-    else {
-     SubG[0] -= double(3.5) * x[0];
-     SubG[1] -= double(3.5) * x[1];
-     }
-    break;
-   // Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 10 ):
-    if( x[0] >= std::abs( x[1] ) ) {
-  	 SubG[0] = double(45) * x[0] /
+   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   SubG[0] = -double(1) + double(4) * x[0];
+   SubG[1] =  double(4) * x[1];
+   if (FIndex == 0) {
+    SubG[0] += double(3.5) * x[0];
+    SubG[1] += double(3.5) * x[1];
+    }
+   else {
+    SubG[0] -= double(3.5) * x[0];
+    SubG[1] -= double(3.5) * x[1];
+    }
+   break;
+  // Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 10 ):
+   if( x[0] >= std::abs( x[1] ) ) {
+ 	 SubG[0] = (x[0]==0) ? 0 : double(45) * x[0] /
 	           std::sqrt( double(9) * x[0] * x[0]
   	   + double(16) * x[1] * x[1] );
-     SubG[1] = double(80) * x[1] /
+     SubG[1] = (x[1]==0) ? 0 : double(80) * x[1] /
                std::sqrt( double(9) * x[0] * x[0]
 			  + double(16) * x[1] * x[1] );
   	 }
-    else
-     if ( x[0] < std::abs( x[1] ) &&  x[0] > double(0) ) {
+   else
+    if ( x[0] < std::abs( x[1] ) &&  x[0] > double(0) ) {
       SubG[0] = double(9) * x[0];
       SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
       }
-     else {
-      SubG[0] = double(9) * ( double(1) - std::pow( x[0] , 8 ) );
-      SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
-      }
-    break;
-   // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 11 ):
-	FiVal_.resize(8);
-    FiVal_[4] = x[0] * x[0]
+    else {
+     SubG[0] = double(9) * ( double(1) - std::pow( x[0] , 8 ) );
+     SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
+     }
+  break;
+  // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 11 ):
+   FiVal_.resize(8);
+   FiVal_[4] = x[0] * x[0]
     		    + x[1] * x[1] + double(2)
 	 * x[2] * x[2] + x[3]
 	 * x[3] - double(5) * x[0]
@@ -1310,37 +1283,37 @@ switch( NameF ) {
     FiVal_[2] = FiVal_[4] + double(10) * FiVal_[6];
     FiVal_[3] = FiVal_[4] + double(10) * FiVal_[7];
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.begin() + 4 ) );
-    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    SubG[0] = double(2) * x[0] - double(5);
-    SubG[1] = double(2) * x[1] - double(5);
-    SubG[2] = double(4) * x[2] - double(21);
-    SubG[3] = double(2) * x[3] + double(7);
-    if (FIndex == 1) {
+   //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   SubG[0] = double(2) * x[0] - double(5);
+   SubG[1] = double(2) * x[1] - double(5);
+   SubG[2] = double(4) * x[2] - double(21);
+   SubG[3] = double(2) * x[3] + double(7);
+   if (FIndex == 1) {
 	 SubG[0] += double(10) * ( double(2) * x[0] + double(1) );
 	 SubG[1] += double(10) * ( double(2) * x[1] - double(1) );
 	 SubG[2] += double(10) * ( double(2) * x[2] + double(1) );
 	 SubG[3] += double(10) * ( double(2) * x[3] - double(1) );
 	 }
-    else
-	 if (FIndex == 2) {
+   else
+    if (FIndex == 2) {
       SubG[0] += double(10) * ( double(2) * x[0] - double(1) );
       SubG[1] += double(40) * x[1];
       SubG[2] += double(20) * x[2];
       SubG[3] += double(10) * ( double(4) * x[3] - double(1) );
 	  }
-	 else
-	  if (FIndex == 3) {
+	else
+	 if (FIndex == 3) {
 	   SubG[0] += double(10) * ( double(2) * x[0] + double(2) );
 	   SubG[1] += double(10) * ( double(2) * x[1] - double(1) );
 	   SubG[2] += double(20) * x[2];
 	   SubG[3] -= double(10);
 	   }
-    break;
-   // Shor  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 12 ):
-    FiVal_.resize(10);
-    for( Index i = 0; i < 10; i++ ) {
+  break;
+  // Shor  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 12 ):
+   FiVal_.resize(10);
+   for( Index i = 0; i < 10; i++ ) {
      FiVal_[i] = 0;
      for( Index j = 0; j < 5; j++ )
       FiVal_[i] += b12[ i ] * ( x[ j ] - A12[ i ][ j ] )
@@ -1350,9 +1323,9 @@ switch( NameF ) {
     for ( Index j = 0; j < 5; j++ )
      SubG[j] = double(2) * b12[ FIndex ] * ( x[j] - A12[ FIndex ][ j ] );
     break;
-   // Maxquad - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 13 ):
+  // Maxquad - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 13 ):
     for( Index i = 1; i <= 5 ; i ++ )
      for( Index j = 1; j <= 10 ; j++ ) {
       for( Index k = j + 1; k <= 10; k++ ) {
@@ -1375,36 +1348,36 @@ switch( NameF ) {
      FiVal_[i] = 0;
      for( Index k = 0; k < 10; k++ )
        FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
-        A16[ i ][ k ].end() , x.begin() , 0 );
-      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+        A16[ i ][ k ].end() , x.begin() , double(0) );
+      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , double(0) );
      }
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     for ( Index k = 0; k < 10 ; k ++ )
      SubG[k] = double( 2 ) * std::inner_product( A16[ FIndex ][ k ].begin() ,
-    	A16[ FIndex ][ k ].end() , x.begin() , 0 ) - b16[ FIndex ][ k ];
-    break;
-   // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 14 ):
+    	A16[ FIndex ][ k ].end() , x.begin() , double(0) ) - b16[ FIndex ][ k ];
+  break;
+  // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 14 ):
     FiVal_.resize(20);
     for( Index i = 0; i < 20; i++ )
      FiVal_[i] = x[i] * x[i];
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     SubG[ FIndex ] = double(2) * x[ FIndex ];
-    break;
-   // Maxl  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 15 ):
+  break;
+  // Maxl  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 15 ):
     FiVal_.resize(20);
     for ( Index i = 0; i < 20; i++ )
      FiVal_[ i ] = std::abs( x[ i ] );
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     SubG[FIndex] = ( x[FIndex] >= double(0) )? double(1): - double(1);
-    break;
-   // TR48  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 16 ):
+  break;
+  // TR48  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 16 ):
     FiVal_.resize(48);
     for( Index j = 0; j < 48; j++ ) {
      for( Index i = 0; i < 48 ; i++ )
@@ -1413,19 +1386,19 @@ switch( NameF ) {
      SubG[ FIndex ] += d21[ j ];
      SubG[ j ] -= s21[ j ];
      }
-    break;
-   // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  break;
+  // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 17 ):
    FiVal_.resize(10);
    for( Index i = 0; i < 10; i++ )
     FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() ,
-                x.begin() , 0 );
+                x.begin() , double(0) );
    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
    for ( Index j = 0; j < 5; j++ )
     SubG[j] = double(3) * d13[j] * x[j] * x[j] + e13[j]
          + double(2) * std::inner_product( C13[j].begin() , C13[j].end() ,
-           x.begin() , 0 );
+           x.begin() , double(0) );
    if( FiVal_[FIndex] >  double(0) )
    for ( Index j = 0; j < x.size() ; j++ )
     SubG[j] += double(50) * A13[ FIndex ][ j ];
@@ -1489,7 +1462,7 @@ switch( NameF ) {
    break;
   // Gill    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -1552,17 +1525,15 @@ switch( NameF ) {
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
-   FiVal_.resize(x.size());
-   for ( Index i = 0; i < x.size() ; i++ )
-	FiVal_[i] = x[i];
-   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+  case( 20 ):
+   FIndex = std::distance( x.begin() , std::max_element( x.begin() , x.end() ) );
    SubG[FIndex] = double(50);
    for ( Index i = 0; i < x.size() ; i++ )
     SubG[i] -= double(1);
    break;
-  // MXHILB
-  case ( 23 ): {
+  // MXHILB - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 21 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for ( Index i = 0; i < x.size(); i++ ) {
@@ -1580,8 +1551,9 @@ switch( NameF ) {
     SubG[j] = b[FIndex] / ( (FIndex+1) + (j+1) -1 );
    break;
    }
-  // L1HILB
-  case ( 24 ): {
+  // L1HILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 22 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for( Index i = 0; i < x.size(); i++ ) {
@@ -1600,13 +1572,13 @@ switch( NameF ) {
    }
    // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 26 ):
+   case( 23 ):
     for( Index i = 0; i < x.size() ; i++ )
      SubG[ i ] = x[ i ];
     break;
    // AbsVal   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 27 ):
+   case( 24 ):
     for( Index i = 0; i < x.size() ; i++ )
      if( x[ i ] >= 0 )
       SubG[ i ] = 1;
@@ -1615,12 +1587,12 @@ switch( NameF ) {
     break;
    // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 28 ) :
+   case( 25 ) :
     tempL.resize( x.size() , 0 );
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
 	 std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(), std::minus<double>() );
-	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , 0 ) );
+	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , double(0) ) );
 	 FiVal_[ j ] += aQR[ j ];
 	 }
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
@@ -1630,7 +1602,7 @@ switch( NameF ) {
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 29 ):
+   case( 26 ):
     if( x[ 1 ] <= 0) {
      SubG[ 0 ] = 2.0 * x[ 0 ];
      SubG[ 1 ] = -1;
@@ -1679,7 +1651,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients( FunctionValue * 
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
-SubG.resize( x.size() , 0.0 );
+SubG.assign( x.size() , 0.0 );
 
 switch( NameF ) {
  // Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1732,9 +1704,9 @@ switch( NameF ) {
 	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
 	  }
     break;
-   // CB3   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 4 ):
+  // CB3   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 4 ):
     FiVal_.resize(3);
     FiVal_[0] = std::pow( x[0] , 4 ) + x[1] * x[1];
     FiVal_[1] = ( double(2) - x[0] ) * ( double(2) - x[0] )
@@ -1755,10 +1727,10 @@ switch( NameF ) {
 	  SubG[0] = -double(2) * exp ( - x[0] + x[1] );
 	  SubG[1] = double(2) * exp ( - x[0] + x[1] );
 	  }
-    break;
-   // DEM   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 5 ):
+  break;
+  // DEM   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 5 ):
     FiVal_.resize(3);
     FiVal_[0] = double(5) * x[0] + x[1];
     FiVal_[1] = - double(5) * x[0] + x[1];
@@ -1779,10 +1751,10 @@ switch( NameF ) {
 	  SubG[0] = double(2) * x[0];
 	  SubG[1] = double(2) * x[1] + double(4);
 	  }
-    break;
-   // QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 6 ):
+  break;
+  // QL    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 6 ):
     FiVal_.resize(3);
     FiVal_[0] = x[0] * x[0] + x[1] * x[1];
     FiVal_[1] = FiVal_[0]
@@ -1802,10 +1774,10 @@ switch( NameF ) {
 	  SubG[0] -= 10;
 	  SubG[1] -= 20;
 	  }
-    break;
-   // LQ  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 7 ):
+  break;
+  // LQ  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 7 ):
     FiVal_.resize(2);
     FiVal_[0] = - x[0] - x[1];
     FiVal_[1] = - x[0] - x[1] + ( x[0] * x[0]
@@ -1818,10 +1790,10 @@ switch( NameF ) {
 	 SubG[0] += double(2) * x[0];
 	 SubG[1] += double(2) * x[1];
 	 }
-    break;
-   // Mifflin 1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 8 ):
+  break;
+  // Mifflin 1 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 8 ):
     FiVal_.resize(2);
     FiVal_[0] = x[0] * x[0]
     		    + x[1] * x[1] - double(1);
@@ -1834,10 +1806,10 @@ switch( NameF ) {
      SubG[0] += double(40) * x[0];
      SubG[1] += double(40) * x[1];
      }
-    break;
-   // Mifflin 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 9 ):
+  break;
+  // Mifflin 2 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 9 ):
     FiVal_.resize(2);
     FiVal_[0] = x[0] * x[0]
     		    + x[1] * x[1] - double(1);
@@ -1855,10 +1827,10 @@ switch( NameF ) {
      SubG[0] -= double(3.5) * x[0];
      SubG[1] -= double(3.5) * x[1];
      }
-    break;
-   // Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 10 ):
+  break;
+  // Wolfe   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 10 ):
     if( x[0] >= std::abs( x[1] ) ) {
   	 SubG[0] = double(45) * x[0] /
 	           std::sqrt( double(9) * x[0] * x[0]
@@ -1876,10 +1848,10 @@ switch( NameF ) {
       SubG[0] = double(9) * ( double(1) - std::pow( x[0] , 8 ) );
       SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
       }
-    break;
-   // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 11 ):
+  break;
+  // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 11 ):
 	FiVal_.resize(8);
     FiVal_[4] = x[0] * x[0]
     		    + x[1] * x[1] + double(2)
@@ -1931,10 +1903,10 @@ switch( NameF ) {
 	   SubG[2] += double(20) * x[2];
 	   SubG[3] -= double(10);
 	   }
-    break;
-   // Shor  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 12 ):
+  break;
+  // Shor  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 12 ):
     FiVal_.resize(10);
     for( Index i = 0; i < 10; i++ ) {
      FiVal_[i] = 0;
@@ -1945,10 +1917,10 @@ switch( NameF ) {
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     for ( Index j = 0; j < 5; j++ )
      SubG[j] = double(2) * b12[ FIndex ] * ( x[j] - A12[ FIndex ][ j ] );
-    break;
-   // Maxquad - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 13 ):
+  break;
+  // Maxquad - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 13 ):
     for( Index i = 1; i <= 5 ; i ++ )
      for( Index j = 1; j <= 10 ; j++ ) {
       for( Index k = j + 1; k <= 10; k++ ) {
@@ -1971,18 +1943,18 @@ switch( NameF ) {
      FiVal_[i] = 0;
      for( Index k = 0; k < 10; k++ )
        FiVal_[i] += x[ k ] * std::inner_product( A16[ i ][ k ].begin(),
-        A16[ i ][ k ].end() , x.begin() , 0 );
-      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , 0 );
+        A16[ i ][ k ].end() , x.begin() , double(0) );
+      FiVal_[i] -= std::inner_product( b16[ i ].begin() , b16[ i ].end() , x.begin() , double(0) );
      }
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     for ( Index k = 0; k < 10 ; k ++ )
      SubG[k] = double( 2 ) * std::inner_product( A16[ FIndex ][ k ].begin() ,
-    	A16[ FIndex ][ k ].end() , x.begin() , 0 ) - b16[ FIndex ][ k ];
-    break;
-   // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 14 ):
+    	A16[ FIndex ][ k ].end() , x.begin() , double(0) ) - b16[ FIndex ][ k ];
+  break;
+  // Maxq  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 14 ):
     FiVal_.resize(20);
     for( Index i = 0; i < 20; i++ )
      FiVal_[i] = x[i] * x[i];
@@ -1997,11 +1969,11 @@ switch( NameF ) {
      FiVal_[ i ] = std::abs( x[ i ] );
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
     SubG[FIndex] = ( x[FIndex] >= double(0) )? double(1): - double(1);
-    break;
-   // TR48  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case ( 16 ):
-    FiVal_.resize(48);
+  break;
+  // TR48  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 16 ):
+    FiVal_.resize(48,double(0));
     for( Index j = 0; j < 48; j++ ) {
      for( Index i = 0; i < 48 ; i++ )
       FiVal_[ i ] = x[ i ] - A21[ i ][ j ];
@@ -2009,23 +1981,23 @@ switch( NameF ) {
      SubG[ FIndex ] += d21[ j ];
      SubG[ j ] -= s21[ j ];
      }
-    break;
-   // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  break;
+  // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 17 ):
    FiVal_.resize(10);
    for( Index i = 0; i < 10; i++ )
     FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() ,
-                x.begin() , 0 );
+                x.begin() , double(0) );
    FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
    for ( Index j = 0; j < 5; j++ )
     SubG[j] = double(3) * d13[j] * x[j] * x[j] + e13[j]
          + double(2) * std::inner_product( C13[j].begin() , C13[j].end() ,
-           x.begin() , 0 );
+           x.begin() , double(0) );
    if( FiVal_[FIndex] >  double(0) )
    for ( Index j = 0; j < x.size() ; j++ )
     SubG[j] += double(50) * A13[ FIndex ][ j ];
-   break;
+  break;
   // HS78  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 18 ):
@@ -2082,10 +2054,10 @@ switch( NameF ) {
     SubG[0] -= double(30) * std::pow( x[0], 2);
     SubG[1] -= double(30) * std::pow( x[1], 2);
     }
-   break;
+  break;
   // Gill    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 20 ):
+  case( 19 ):
    FiVal_.resize(3);
    FiVal_[0] = 0;
    for ( Index i = 0; i < x.size(); i++ )
@@ -2148,17 +2120,15 @@ switch( NameF ) {
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 22 ):
-   FiVal_.resize(x.size());
-   for ( Index i = 0; i < x.size() ; i++ )
-	FiVal_[i] = x[i];
-   FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
+  case( 20 ):
+   FIndex = std::distance( x.begin() , std::max_element( x.begin() , x.end() ) );
    SubG[FIndex] = double(50);
    for ( Index i = 0; i < x.size() ; i++ )
     SubG[i] -= double(1);
    break;
-  // MXHILB
-  case ( 23 ): {
+  // MXHILB - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  case ( 21 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for ( Index i = 0; i < x.size(); i++ ) {
@@ -2177,7 +2147,7 @@ switch( NameF ) {
    break;
    }
   // L1HILB
-  case ( 24 ): {
+  case ( 22 ): {
    FiVal_.resize(x.size());
    dblVR1 b(x.size() , 0.0 );
    for( Index i = 0; i < x.size(); i++ ) {
@@ -2196,13 +2166,13 @@ switch( NameF ) {
    }
    // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 26 ):
+   case( 23 ):
     for( Index i = 0; i < x.size() ; i++ )
      SubG[ i ] = x[ i ];
     break;
    // AbsVal   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 27 ):
+   case( 24 ):
     for( Index i = 0; i < x.size() ; i++ )
      if( x[ i ] >= 0 )
       SubG[ i ] = 1;
@@ -2211,12 +2181,12 @@ switch( NameF ) {
     break;
    // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 28 ) :
+   case( 25 ) :
     tempL.resize( x.size() , 0 );
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
 	 std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(), std::minus<double>() );
-	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , 0 ) );
+	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() , tempL.end() , tempL.begin() , double(0) ) );
 	 FiVal_[ j ] += aQR[ j ];
 	 }
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() , FiVal_.end() ) );
@@ -2226,7 +2196,7 @@ switch( NameF ) {
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   case( 29 ):
+   case( 26 ):
     if( x[ 1 ] <= 0) {
      SubG[ 0 ] = 2.0 * x[ 0 ];
      SubG[ 1 ] = -1;
