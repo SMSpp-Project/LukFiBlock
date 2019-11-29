@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.8...3.15)
 project(LukFiBlock VERSION 1.0.0 LANGUAGES CXX)
 
 # ----- Settings ------------------------------------------------------------ #
-include(CTest)
+#include(CTest)
 
 # ----- Requirements -------------------------------------------------------- #
 find_package(SMSpp REQUIRED)
@@ -92,6 +92,6 @@ if (CMAKE_EXPORT_PACKAGE_REGISTRY)
 endif ()
 
 # ----- Subdirectories ------------------------------------------------------ #
-if (BUILD_TESTING)
-    add_subdirectory(test)
-endif()
+#if (BUILD_TESTING)
+#    add_subdirectory(test)
+#endif()
