@@ -90,7 +90,6 @@ if (CMAKE_EXPORT_PACKAGE_REGISTRY)
     export(PACKAGE LukFiBlock)
 endif ()
 
-# ----- Subdirectories ------------------------------------------------------ #
-#if (BUILD_TESTING)
-#    add_subdirectory(test)
-#endif()
+if (BUILD_TESTING)
+    # Just consuming BUILD_TESTING to avoid warnings
+endif ()
