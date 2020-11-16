@@ -1,0 +1,20 @@
+/** @file
+ * Configuration header of the LukFiBlock library.
+ *
+ * \author Niccolò Iardella \n
+ *         Operations Research Group \n
+ *         Dipartimento di Informatica \n
+ *         Universita' di Pisa \n
+ *
+ * \copyright &copy; Niccolò Iardella
+ */
+
+#ifndef __LUKFIBLOCK_CONFIG_H
+#define __LUKFIBLOCK_CONFIG_H
+
+#define LukFiBlock_VERSION       "@LukFiBlock_VERSION@"
+#define LukFiBlock_VERSION_MAJOR "@LukFiBlock_VERSION_MAJOR@"
+#define LukFiBlock_VERSION_MINOR "@LukFiBlock_VERSION_MINOR@"
+#define LukFiBlock_VERSION_PATCH "@LukFiBlock_VERSION_PATCH@"
+
+#endif
