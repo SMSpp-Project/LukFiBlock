@@ -14,15 +14,15 @@
 #                         Dipartimento di Informatica                         #
 #                             Universita' di Pisa                             #
 # --------------------------------------------------------------------------- #
-get_filename_component(LukFiBlock_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(@modName@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
 # ----- Requirements -------------------------------------------------------- #
 find_dependency(SMSpp)
 
 # ----- Import target ------------------------------------------------------- #
-if(NOT TARGET SMS++::SMILPBlock)
-    include("${LukFiBlock_CMAKE_DIR}/LukFiBlockTargets.cmake")
+if (NOT TARGET @modNamespace@::@modName@)
+    include("${@modName@_CMAKE_DIR}/@modName@Targets.cmake")
 endif()
 
-set(LukFiBlock_LIBRARIES SMS++::LukFiBlock)
+set(@modName@_LIBRARIES @modNamespace@::@modName@)
