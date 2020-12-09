@@ -648,7 +648,7 @@ class LukFiFunction : public C05Function {
  /** Extends Block::deserialize( netCDF::NcGroup ) to the specific format of
   * a LukFiBlock.  */
 
- virtual void deserialize( netCDF::NcGroup & group ) override;
+ virtual void deserialize(const netCDF::NcGroup & group ) override;
 
 /*@}------------------------------------------------------------------------*/
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/

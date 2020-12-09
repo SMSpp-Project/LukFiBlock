@@ -338,7 +338,7 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
 
 /*--------------------------------------------------------------------------*/
 
-void LukFiBlock::deserialize( netCDF::NcGroup & group ) 
+void LukFiBlock::deserialize( const netCDF::NcGroup & group )
 {
 
  netCDF::NcDim n_dim  = group.getDim( "num_vars" );
