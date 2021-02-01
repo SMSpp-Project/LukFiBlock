@@ -5,11 +5,11 @@ The block contains a FRealObjective whose the function is a C05Function type.
 
 ## Getting started
 
-These instructions will let you build SDDPBlock on your system.
+These instructions will let you build LukFiBlock on your system.
 
 ### Requirements
 
-- [SMS++ StochasticBlock](https://gitlab.com/smspp/stochasticblock)
+- [SMS++ core library](https://gitlab.com/smspp/smspp)
 
 ### Build and install with CMake
 
@@ -42,7 +42,8 @@ target_link_libraries(<my_target> SMS++::LukFiBlock)
 
 ## Contributing
 
-This section is not ready yet.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of
+conduct, and the process for submitting merge requests to us.
 
 ## Authors
 
