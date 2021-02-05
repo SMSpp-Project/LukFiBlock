@@ -326,7 +326,7 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 
   enum int_par_type_LukF {
-   intNrCmp = intLastParC0F , // number of component functions
+   intNrCmp = intLastParC05F , // number of component functions
    intseed ,                  // seed for random number generation
    intLastParLukF
    };  // end( int_par_type_LukF )
@@ -648,7 +648,7 @@ class LukFiFunction : public C05Function {
  /** Extends Block::deserialize( netCDF::NcGroup ) to the specific format of
   * a LukFiBlock.  */
 
- virtual void deserialize( netCDF::NcGroup & group ) override;
+ virtual void deserialize(const netCDF::NcGroup & group ) override;
 
 /*@}------------------------------------------------------------------------*/
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/

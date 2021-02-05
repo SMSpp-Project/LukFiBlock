@@ -338,7 +338,7 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
 
 /*--------------------------------------------------------------------------*/
 
-void LukFiBlock::deserialize( netCDF::NcGroup & group ) 
+void LukFiBlock::deserialize( const netCDF::NcGroup & group )
 {
 
  netCDF::NcDim n_dim  = group.getDim( "num_vars" );
@@ -2300,8 +2300,8 @@ void LukFiBlock::LukFiFunction::map_active( c_Vec_p_Var & vars , Subset & map ,
 
 int LukFiBlock::LukFiFunction::get_dflt_int_par( const idx_type par ) const
 {
- if( ( par >= intLastParC0F ) && ( par < intLastParLukF ) )
-  return( dflt_int_par[ par - intLastParC0F ] );
+ if( ( par >= intLastParC05F ) && ( par < intLastParLukF ) )
+  return( dflt_int_par[ par - intLastParC05F ] );
  else
   return( C05Function::get_dflt_int_par( par ) );
 
@@ -2345,8 +2345,8 @@ LukFiBlock::LukFiFunction::idx_type LukFiBlock::LukFiFunction::int_par_str2idx(
 const std::string & LukFiBlock::LukFiFunction::int_par_idx2str(
   const idx_type idx ) const
 {
- if( ( idx >= intLastParC0F ) && ( idx < intLastParLukF ) )
-  return( int_pars_str[ idx - intLastParC0F ] );
+ if( ( idx >= intLastParC05F ) && ( idx < intLastParLukF ) )
+  return( int_pars_str[ idx - intLastParC05F ] );
  else
   return( C05Function::int_par_idx2str( idx ) );
  } // end( LukFiFunction::iint_par_idx2str ) - - - - - - - - - - - - - - - - -
