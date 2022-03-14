@@ -5,12 +5,7 @@
  * Small main() for testing SimpleMILPBlock. It just creates one and loads it
  * from a stream; little more than a compilation check.
  *
- * \version 0.10
- *
- * \date 23 - 11 - 2018
- *
  * \author Antonio Frangioni \n
- *         Operations Research Group \n
  *         Dipartimento di Informatica \n
  *         Universita' di Pisa \n
  *
@@ -27,8 +22,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "LukFiBlock.h"
-#include "BundleSolver.h"
+//#include "LukFiBlock.h"
+
+#include "BlockSolverConfig.h"
+
+//#include "BundleSolver.h"
 
 /*--------------------------------------------------------------------------*/
 /*-------------------------------- USING -----------------------------------*/
@@ -50,7 +48,8 @@ const char *const logF = "log.bn";
 int main( int argc , char **argv )
 {
  if( argc <1 || argc>2) {
-  cerr << "Usage: " << argv[ 0 ] << " LukFi_file_name NC4_file_name [NC4_file_name_2]" << endl;
+  cerr << "Usage: " << argv[ 0 ]
+       << " LukFi_file_name NC4_file_name [NC4_file_name_2]" << endl;
   return( 1 );
   }
 
@@ -67,8 +66,8 @@ int main( int argc , char **argv )
  BlockSolverConfig * bsc = new BlockSolverConfig;
  ProbFile >> *( bsc );
 
- sLukFi->set_SolverConfig( bsc );
- delete bsc;
+ bsc->apply( sLukFi );
+ bsc->clear();
 
  Solver * slvr = (sLukFi->get_registered_solvers()).front();
 
@@ -85,6 +84,10 @@ int main( int argc , char **argv )
 
  LOGFile << std::endl << std::endl << "f* = "
 		 << slvr->get_lb() << " (optimal value)" << std::endl;
+
+ bsc->apply( sLukFi );
+
+ delete bsc;
 
  delete sLukFi;
 

@@ -6,17 +6,11 @@
  * Block concept [see Block.h] for a very simple "flat" problem having
  * a nonsmooth objective function and no constraints.
  *
- * \version 0.01
- *
- * \date 23 - 11 - 2019
- *
  * \author Antonio Frangioni \n
- *         Operations Research Group \n
  *         Dipartimento di Informatica \n
  *         Universita' di Pisa \n
  *
  * \author Enrico Gorgone \n
- *         Operations Research Group \n
  *         Dipartimento di Informatica \n
  *         Universita' di Pisa \n
  *
@@ -50,30 +44,16 @@
 namespace SMSpp_di_unipi_it
 {
 /*--------------------------------------------------------------------------*/
-/*-------------------- SimpleMILPBlock-RELATED TYPES -----------------------*/
-/*--------------------------------------------------------------------------*/
-/** @defgroup LukFiBlock_TYPES SimpleMILPBlock-related types
- *  @{ */
-
-/** @}  end( group( LukFiBlock_TYPES ) ) */
-/*--------------------------------------------------------------------------*/
-/*------------------------------- CLASSES ----------------------------------*/
-/*--------------------------------------------------------------------------*/
-/** @defgroup SimpleMILPBlock_CLASSES Classes in SimpleMILPBlock.h
- *  @{ */
-
-/*--------------------------------------------------------------------------*/
 /*-------------------------- CLASS LukFiBlock ------------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------- GENERAL NOTES --------------------------------*/
 /*--------------------------------------------------------------------------*/
-/// Implementation of a simple LukFi Block concept.
+ /// Implementation of a simple LukFi Block concept.
  /* In the sequel is reported the optimal value of the implemented
     functions. For a detailed description we refer to the paper
     "Piecewise-quadratic approximations in convex numerical optimization"
      Siam Journal on Optimization. 21(4):1418-1438
     by A. Astorino, F. Frangioni, M. Gaudioso and E. Gorgone
-
 
   1. Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - nonconvex
@@ -191,8 +171,9 @@ public:
 /*---------------------------- PUBLIC TYPES --------------------------------*/
 /*--------------------------------------------------------------------------*/
 
- typedef std::vector<double> DblRow;
- typedef std::vector<DblRow> DblMat;
+ typedef std::vector< double > DblRow;
+
+ typedef std::vector< DblRow > DblMat;
 
 /*--------------------------------------------------------------------------*/
 /*------------------------- CLASS LukFiFunction -----------------------------*/
@@ -218,19 +199,22 @@ class LukFiFunction : public C05Function {
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
- typedef const std::vector< ColVariable * > c_v_col_var; ///< a const vector of dual_pair
+ typedef const std::vector< ColVariable * > c_v_col_var;
+ ///< a const vector of dual_pair
 
 /*--------------------------------------------------------------------------*/
 
- typedef std::vector<double> dblVR1;
- typedef std::vector<dblVR1> dblVR2;
- typedef std::vector<dblVR2> dblVR3;
+ typedef std::vector< double > dblVR1;
+
+ typedef std::vector< dblVR1 > dblVR2;
+
+ typedef std::vector< dblVR2 > dblVR3;
 
 /*--------------------------------------------------------------------------*/
-  /// virtualized concrete iterator
-  /** A concrete class deriving from ThinVarDepInterface::v_iterator and
-   * implementing the concrete iterator for "sifting through" the "active"
-   * Variable of a LagBFunction. */
+ /// virtualized concrete iterator
+ /** A concrete class deriving from ThinVarDepInterface::v_iterator and
+  * implementing the concrete iterator for "sifting through" the "active"
+  * Variable of a LukFiFunction. */
 
  class v_iterator : public ThinVarDepInterface::v_iterator
   {
@@ -274,11 +258,11 @@ class LukFiFunction : public C05Function {
    v_col_var::iterator itr_;
    };
 
- /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-  /// virtualized concrete const_iterator
-  /** A concrete class deriving from ThinVarDepInterface::v_const_iterator and
-    * implementing the concrete iterator for sifting through the "active"
-    * Variable of a LinearFunction. */
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+ /// virtualized concrete const_iterator
+ /** A concrete class deriving from ThinVarDepInterface::v_const_iterator and
+  * implementing the concrete iterator for sifting through the "active"
+  * Variable of a LukFiFunction. */
 
   class v_const_iterator : public ThinVarDepInterface::v_const_iterator
   {
@@ -355,7 +339,7 @@ class LukFiFunction : public C05Function {
 
 /*--------------------------------------------------------------------------*/
 
- virtual void clear( void ) override { };
+ void clear( void ) override { };
 
 /**@} ----------------------------------------------------------------------*/
 /*-------------------------- OTHER INITIALIZATIONS -------------------------*/
@@ -367,13 +351,13 @@ class LukFiFunction : public C05Function {
  /** Set a given integer (int) numerical parameter. The method sets the maximum
   *  size of both the local and the global pool  */
 
- virtual void set_par( const idx_type par , const int value ) override;
+ void set_par( const idx_type par , const int value ) override;
 
 /*--------------------------------------------------------------------------*/
  /** As stated above, the Observer of a LukFiFunction is assumed to be a
   * FRealObjective. */
 
-// ?? virtual void register_Observer( Observer * const observer = nullptr ) override {}
+// ?? void register_Observer( Observer * const observer = nullptr ) override {}
 
 /**@} ----------------------------------------------------------------------*/
 /*-------------------- Methods for handling Modification -------------------*/
@@ -381,8 +365,7 @@ class LukFiFunction : public C05Function {
 /** @name Methods for handling Modification
  *  @{ */
 
- virtual void remove_variable( Index i ,
- 			       c_ModParam issueMod = eModBlck ) override {
+ void remove_variable( Index i , c_ModParam issueMod = eModBlck ) override {
   throw( std::logic_error( "variables remotion is not allowed" ) );
   }
 
@@ -460,7 +443,7 @@ class LukFiFunction : public C05Function {
 
  virtual int get_dflt_int_par( const idx_type par ) const override;
 
-/**@} ----------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction ---------*/
 /*--------------------------------------------------------------------------*/
 /** @name Methods for handling the set of "active" Variable in the
@@ -468,49 +451,50 @@ class LukFiFunction : public C05Function {
  * vector lag_p of Lagrangian pairs.
  * @{ */
 
- virtual Index get_num_active_var( void ) const override final {
+ Index get_num_active_var( void ) const override final {
   return( v_vars.size() );
   }
 
 /*--------------------------------------------------------------------------*/
 
- virtual Index is_active( const Variable * const var ) const override final;
+ Index is_active( const Variable * var ) const override final;
 
 /*--------------------------------------------------------------------------*/
 
- virtual void map_active( c_Vec_p_Var & vars , Subset & map ,
-			  const bool ordered = false ) const override final;
+ void map_active( c_Vec_p_Var & vars , Subset & map ,
+		  bool ordered = false ) const override final;
 
 /*--------------------------------------------------------------------------*/
 
- virtual Variable *get_active_var( const Index i ) const override final {
+ Variable * get_active_var( const Index i ) const override final {
   return( *( v_vars.begin() + i ) );
   }
+
 /*--------------------------------------------------------------------------*/
 
- virtual v_iterator * v_begin( void ) override final {
+ v_iterator * v_begin( void ) override final {
   return( new LukFiFunction::v_iterator( v_vars.begin() ) );
   }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
- virtual v_const_iterator * v_begin( void ) const override final {
+ v_const_iterator * v_begin( void ) const override final {
   return( new LukFiFunction::v_const_iterator( v_vars.begin() )  );
   }
 
 /*--------------------------------------------------------------------------*/
 
- virtual v_iterator * v_end( void ) override final {
+ v_iterator * v_end( void ) override final {
   return( new LukFiFunction::v_iterator( v_vars.end() ) );
   }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
- virtual v_const_iterator * v_end( void ) const override final {
+ v_const_iterator * v_end( void ) const override final {
   return( new LukFiFunction::v_const_iterator( v_vars.end() ) );
   }
 
-/**@} ----------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*-------------------- PROTECTED PART OF THE CLASS -------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -523,9 +507,9 @@ class LukFiFunction : public C05Function {
  *  @{ */
 
  /// printing the LukFiFunction
- virtual void print( std::ostream &output ) const override {}
+ void print( std::ostream & output ) const override {}
 
-/**@} ----------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -588,32 +572,64 @@ class LukFiFunction : public C05Function {
  /// destructor of LukFiBlock
  /** Destructor of LukFiBlock. . */
 
- virtual ~LukFiBlock() {
-  f.clear();
-  }
+ virtual ~LukFiBlock() { f.clear(); }
 
-/*@} -----------------------------------------------------------------------*/
+/** @} ----------------------------------------------------------------------*/
 /*-------------------------- OTHER INITIALIZATIONS -------------------------*/
 /*--------------------------------------------------------------------------*/
 /** @name Other initializations
  *  @{ */
 
- virtual void generate_abstract_variables( Configuration *stvv = nullptr )
-   override;
+ /// load the LukFiBlock out of an istream
+ /** Load the LukFiBlock out of an istream. The format is:
+  *
+  * number of variables ,
+  * name of the function
+  * number of components ,
+  * seed
+  *
+  * Since only one format is supported, \p frmt is ignored. */
+
+ void load( std::istream & input , char frmt = 0 ) override;
+
+/*--------------------------------------------------------------------------*/
+ /// extends Block::deserialize( netCDF::NcGroup )
+ /** Extends Block::deserialize( netCDF::NcGroup ) to the specific format of
+  * a LukFiBlock.  */
+
+ void deserialize( const netCDF::NcGroup & group ) override;
 
 /*--------------------------------------------------------------------------*/
 
- virtual void generate_objective( Configuration *objc = nullptr ) override;
+ void generate_abstract_variables( Configuration *stvv = nullptr ) override;
 
-/*@} -----------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+
+ void generate_objective( Configuration *objc = nullptr ) override;
+
+/** @} ---------------------------------------------------------------------*/
+/*------------- METHODS FOR PRINTING & SAVING THE LukFiBlock ---------------*/
+/*--------------------------------------------------------------------------*/
+/** @name Methods for printing & saving the LukFiBlock
+ *  @{ */
+
+ /// print the LukFiBlock on an ostream with the given verbosity
+
+ void print( std::ostream & output , char vlvl = 0 ) const override;
+
+/*--------------------------------------------------------------------------*/
+
+ void serialize( netCDF::NcGroup & file ) const override;
+
+/** @} ---------------------------------------------------------------------*/
 /*-------------------------------- ACCESSORS -------------------------------*/
 /*--------------------------------------------------------------------------*/
 /** @name Accessors
  *  @{ */
 
- std::vector<ColVariable> & get_x( void ) { return( x ); }
+ std::vector< ColVariable > & get_x( void ) { return( x ); }
 
-/*@}------------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*-------------------- PROTECTED PART OF THE CLASS -------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -622,35 +638,6 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
 /*-------------------------- PROTECTED METHODS -----------------------------*/
 /*--------------------------------------------------------------------------*/
-/** @name Protected methods for inserting and extracting
-    @{ */
-
- virtual void print( std::ostream &output ) const override;
- ///< print the LukFiBlock on an ostream with the given verbosity
-
-/*--------------------------------------------------------------------------*/
-
- virtual void load( std::istream &input ) override;
-
- ///< load the LukFiBlock out of an istream
- /**< Load the LukFiBlock out of an istream. The format is:
-  *
-  * number of variables ,
-  * name of the function
-  * number of components ,
-  * seed
-  */
-
- virtual void serialize( netCDF::NcGroup & file ) const override;
-
-/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
- /// extends Block::deserialize( netCDF::NcGroup )
- /** Extends Block::deserialize( netCDF::NcGroup ) to the specific format of
-  * a LukFiBlock.  */
-
- virtual void deserialize(const netCDF::NcGroup & group ) override;
-
-/*@}------------------------------------------------------------------------*/
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/
 /*--------------------------------------------------------------------------*/
 
@@ -674,12 +661,12 @@ class LukFiFunction : public C05Function {
 
  private:
 
-
 /*--------------------------------------------------------------------------*/
 /*-------------------------- PRIVATE METHODS -------------------------------*/
 /*--------------------------------------------------------------------------*/
 
  void SetDimension( int n );
+
  void SetInitialPoint( void );
 
 /*--------------------------------------------------------------------------*/
@@ -693,8 +680,6 @@ class LukFiFunction : public C05Function {
 };  // end( class( LukFiBlock ) )
 
 /*--------------------------------------------------------------------------*/
-
-/*@}  end( group( LukFiBlock_CLASSES ) ) -----------------------------------*/
 /*--------------------------------------------------------------------------*/
 
  }  // end( namespace SMSpp_di_unipi_it )

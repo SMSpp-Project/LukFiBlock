@@ -2,15 +2,11 @@
 ################################ makefile ####################################
 ##############################################################################
 #                                                                            #
-#   makefile of test (for core SMS++)                                        #
-#                                                                            #
-#                                VERSION 2.00                                #
-#                               12 - 11 - 2018                               #
+#   makefile of test (for core LukFiBlock)                                   #
 #                                                                            #
 #                              Implementation by:                            #
 #                                                                            #
 #                              Antonio Frangioni                             #
-#                           Operations Research Group                        #
 #                          Dipartimento di Informatica                       #
 #                              Universita' di Pisa                           #
 #                                                                            #
@@ -23,13 +19,13 @@ NAME = LukFiMain
 DIR = ./
 
 # debug switches
-SW =  -g3 -glldb -fno-inline -std=c++17 -ferror-limit=1 -lz -lbz2
-
+#SW = -g -glldb -fno-inline -std=c++17 -ferror-limit=1
+# debug switches with address sanitizer and extra pedantic warning
+SW = -g3 -glldb -fno-inline -std=c++17 -ferror-limit=1 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer -Wpedantic -Wextra -Wno-unused-parameter -Wno-enum-compare -DCLANG_1200_0_32_27_PATCH
 # production switches
 #SW = -O3 -DNDEBUG -std=c++17  
 
 # compiler
-#CC = /usr/local/Cellar/gcc/8.3.0_2/bin/g++-8 
 CC = clang++ 
 
 # default target- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
