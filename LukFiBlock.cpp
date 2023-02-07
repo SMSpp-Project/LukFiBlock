@@ -23,9 +23,10 @@
 /*--------------------------------------------------------------------------*/
 
 #include "LukFiBlock.h"
-#include "Observer.h"
-#include "SMSTypedefs.h"
+//#include "Observer.h"
+//#include "SMSTypedefs.h"
 #include <math.h>
+#include <random>
 
 #include <iostream>
 #include <numeric>
@@ -259,7 +260,7 @@ void LukFiBlock::generate_objective( Configuration * objc )
   return;           // cowardly (and silently) return
 
  LukFiFunction::v_col_var vars( x.size() );
- for( int i = 0 ; i < x.size() ; ++i )
+ for( decltype( x.size() ) i = 0 ; i < x.size() ; ++i )
   vars[ i ] = &x[ i ];
 
  f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
@@ -303,14 +304,9 @@ void LukFiBlock::load( std::istream & input , char frmt )
 
  generate_objective();
 
- /*  string config_name = read_string( input );
- if( config_name != "LukfiConfig"  )
-  throw( std::invalid_argument( "invalid configuration name" ) ); */
-
- ComputeConfig* cc = new ComputeConfig;
- input >> *(cc);
- f.get_function()->set_ComputeConfig( cc );
- delete cc;
+ ComputeConfig cc;
+ input >> cc;
+ f.get_function()->set_ComputeConfig( & cc );
 
  // issue the NBModification - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -540,7 +536,7 @@ void LukFiBlock::SetInitialPoint( void )
    break;
   // Rosen   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 11 ):
-   for ( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
 	x[ i ].set_value( 0 );
    break;
   // Shor    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -550,21 +546,21 @@ void LukFiBlock::SetInitialPoint( void )
    break;
   // Maxquad   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 13 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1 );
    break;
   // Maxq    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 14 ):
-   for( int i = 0 ; i < 10 ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < 10 ; i++ )
     x[ i ].set_value( i + 1 );
-   for( int i = 10 ; i < 20 ; i++ )
+   for( decltype( x.size() ) i = 10 ; i < 20 ; i++ )
     x[ i ].set_value( -i - 1 );
    break;
   // Maxl    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 15 ):
-   for( int i = 0 ; i < 10 ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < 10 ; i++ )
     x[ i ].set_value( i + 1 );
-   for( int i = 10 ; i < 20 ; i++ )
+   for( decltype( x.size() ) i = 10 ; i < 20 ; i++ )
     x[ i ].set_value( -i - 1 );
    break;
   // TR48    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -608,37 +604,37 @@ void LukFiBlock::SetInitialPoint( void )
    break;
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 19 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( -0.1 );
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 20 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( double( i+1 ) - 25.5 );
    break;
   // MXHILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 21 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1 );
    break;
   // L1HILB    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 22 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1 );
    break;
   // smooth    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 23 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1.0 );
    break;
   // AbsVal    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 24 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( -1.0 );
    break;
   // MaxQR    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 25 ):
-   for( int i = 0 ; i < x.size() ; i++ )
+   for( decltype( x.size() ) i = 0 ; i < x.size() ; i++ )
     x[ i ].set_value( 1.0 );
    break;
   // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -694,7 +690,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
  dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
 
  dblVR1 x( v_vars.size() );
- for( int i = 0 ; i < v_vars.size() ; i++ )
+ for( decltype( v_vars.size() ) i = 0 ; i < v_vars.size() ; i++ )
   x[ i ] = v_vars[ i ]->get_value();
 
  switch( NameF ) {
@@ -890,6 +886,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    FiVal -= std::inner_product( s21.begin() , s21.end() , x.begin() ,
 				double(0) );
    break;
+
   // Colville 1  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 17 ):
@@ -904,21 +901,21 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
     FiVal_[i] = b13[i] - std::inner_product( A13[ i ].begin() , A13[ i ].end() , x.begin() , double(0) );
    FiVal += double(50) * std::max( double(0) , *std::max_element( FiVal_.begin() , FiVal_.end() ) );
    break;
+
   // HS78 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 18 ):
-   FiVal_.resize(3);
-   FiVal_[0] = x[0] * x[0] + x[1] * x[1]
-                + x[2] * x[2] + x[3] * x[3]
-                + x[4] * x[4]  - double(10);
-   FiVal_[1] =  x[1] * x[2]
-                 - double(5) * x[3] * x[4];
-   FiVal_[2] = x[0] * x[0] * x[0] +
-		       x[1] * x[1] * x[1]  + double(1) ;
-   FiVal = double(10) * ( std::abs(FiVal_[0]) + std::abs(FiVal_[1]) + std::abs(FiVal_[2]) );
-   FiVal += x[0] * x[1] * x[2]
-		    * x[3] * x[4] ;
+   FiVal_.resize( 3 );
+   FiVal_[ 0 ] = x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ] + x[ 2 ] * x[ 2 ]
+               + x[ 3 ] * x[ 3 ] + x[ 4 ] * x[ 4 ]  - double( 10 );
+   FiVal_[ 1 ] = x[ 1 ] * x[ 2 ] - double( 5 ) * x[ 3 ] * x[ 4 ];
+   FiVal_[ 2 ] = x[ 0 ] * x[ 0 ] * x[ 0 ] + x[ 1 ] * x[ 1 ] * x[ 1 ]
+               + double( 1 ) ;
+   FiVal = double( 10 ) * ( std::abs( FiVal_[ 0 ] ) + std::abs( FiVal_[ 1 ] )
+			    + std::abs( FiVal_[ 2 ] ) );
+   FiVal += x[ 0 ] * x[ 1 ] * x[ 2 ] * x[ 3 ] * x[ 4 ] ;
    break;
+
   // Gill  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 19 ):
@@ -949,12 +946,14 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
       + ( 1.0 - x[i] ) * ( 1.0 - x[i] );
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
    break;
+
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 20 ):
    FiVal = double(50) * *std::max_element( x.begin() , x.end() )
-           - std::accumulate( x.begin() , x.end() , double(0) );
+           - std::accumulate( x.begin() , x.end() , double( 0 ) );
    break;
+
   // MXHILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 21 ):
@@ -967,17 +966,18 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 	}
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
    break;
+
   // L1HILB  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 22 ):
    FiVal_.resize(x.size());
-   for ( Index i = 0; i < x.size() ; i++ ) {
-	FiVal_[i] = double(0);
-	for ( Index j = 0; j < x.size() ; j++ )
-	 FiVal_[i] += double(x[j]) / ( (i+1) + (j+1) -1 );
-	FiVal_[i] = std::abs(FiVal_[i]);
-	}
-   FiVal = std::accumulate( FiVal_.begin() , FiVal_.end() , double(0) );
+   for( Index i = 0 ; i < x.size() ; i++ ) {
+    FiVal_[ i ] = double( 0 );
+    for ( Index j = 0 ; j < x.size() ; j++ )
+     FiVal_[ i ] += double( x[ j ] ) / ( (i+1) + (j+1) -1 );
+    FiVal_[ i ] = std::abs( FiVal_[ i ] );
+    }
+   FiVal = std::accumulate( FiVal_.begin() , FiVal_.end() , double( 0 ) );
    break;
   // smooth  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -991,38 +991,44 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    for( Index i = 0; i < x.size() ; i++ )
    	FiVal += std::abs( x[ i ] );
    break;
+
   // MaxQR   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  case( 25 ):
-   srand48( seed );
+  case( 25 ): {
+   rg.seed( seed );
    bQR.resize( NrCmp );
    aQR.resize( NrCmp );
    cQR.resize( NrCmp );
 
-   // define data - - - - - - - - - - - - - - - - - - - - -
-   for( int j = 0; j < NrCmp; j++ ) {
-    bQR[ j ] = 1e+2 * drand48();
-	aQR[ j ] = 2e+2 * ( drand48() - 0.5 );
-	cQR[ j ].resize( v_vars.size() );
-	for( int i = 0; i < v_vars.size() ; i++ )
-	 cQR[ j ][ i ] = 2e+2 * ( drand48() - 0.5 );
-	}
+   // define data- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   std::uniform_real_distribution<> dis01( 0.0 , 1.0 );
+   std::uniform_real_distribution<> dis5m5( 0.5 , - 0.5 );
 
-  tempL.resize( x.size() , 0 );
-  FiVal_.resize( NrCmp );
-   for( Index j = 0; j < NrCmp; j++ ) {
-    std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(),
-		    std::minus<double>() );
-	FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() ,
-							    tempL.end() ,
-							    tempL.begin() ,
-							    double(0) ) );
-	FiVal_[ j ] += aQR[ j ];
+   for( Index j = 0 ; j < NrCmp ; j++ ) {
+    bQR[ j ] = 1e+2 * dis01( rg );
+    aQR[ j ] = 2e+2 * dis5m5( rg );
+    cQR[ j ].resize( v_vars.size() );
+    for( decltype( v_vars.size() ) i = 0; i < v_vars.size() ; i++ )
+     cQR[ j ][ i ] = 2e+2 * dis5m5( rg );
     }
+
+   tempL.resize( x.size() , 0 );
+   FiVal_.resize( NrCmp );
+   for( Index j = 0; j < NrCmp; j++ ) {
+    std::transform( x.begin() , x.end() , cQR[ j ].begin() , tempL.begin() ,
+		    std::minus<double>() );
+    FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() ,
+							tempL.end() ,
+							tempL.begin() ,
+							double( 0 ) ) );
+    FiVal_[ j ] += aQR[ j ];
+    }
+
    FiVal = *std::max_element( FiVal_.begin() , FiVal_.end() );
    break;
+   }
 
-  // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Lewis - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 26 ):
    if( x[ 1 ] <= 0)
@@ -1064,7 +1070,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
  dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
 
  dblVR1 x( v_vars.size() );
- for( int i = 0 ; i < v_vars.size() ; i++ )
+ for( decltype( v_vars.size() ) i = 0 ; i < v_vars.size() ; i++ )
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
@@ -1685,7 +1691,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
  dblVR2 b16( 5 , dblVR1( 10 , 0 ) );
 
  dblVR1 x( v_vars.size() );
- for( int i = 0 ; i < v_vars.size() ; i++ )
+ for( decltype( v_vars.size() ) i = 0 ; i < v_vars.size() ; i++ )
   x[ i ] = v_vars[ i ]->get_value();
 
  // SubG is always in "dense" format
@@ -2304,7 +2310,7 @@ Function::FunctionValue
   throw( std::logic_error( "the linearization is not available" ) );
 
  double value_k = FiVal;
- for( int i = 0 ; i < v_vars.size() ; i++ )
+ for( decltype( v_vars.size() ) i = 0 ; i < v_vars.size() ; i++ )
   value_k -=  v_vars[ i ]->get_value() * SubG[ i ];
 
  return( value_k );

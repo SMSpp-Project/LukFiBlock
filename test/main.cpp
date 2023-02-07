@@ -21,12 +21,7 @@
 
 #include <iostream>
 #include <fstream>
-
-//#include "LukFiBlock.h"
-
 #include "BlockSolverConfig.h"
-
-//#include "BundleSolver.h"
 
 /*--------------------------------------------------------------------------*/
 /*-------------------------------- USING -----------------------------------*/
@@ -47,29 +42,40 @@ const char *const logF = "log.bn";
 
 int main( int argc , char **argv )
 {
- if( argc <1 || argc>2) {
+ if( argc > 3 ) {
   cerr << "Usage: " << argv[ 0 ]
-       << " LukFi_file_name NC4_file_name [NC4_file_name_2]" << endl;
+       << " [LukFi_file_name BlockSolverConfig_file_name]" << endl;
   return( 1 );
   }
 
- ifstream ProbFile( argv[ 1 ] );
+ ifstream ProbFile( argc < 2 ? "LukFiB.txt" : argv[ 1 ] );
  if( ! ProbFile.is_open() ) {
-  cerr << "Error: cannot open file " << argv[ 1 ] << endl;
+  cerr << "Error: cannot open input file "
+       << ( argc < 2 ? "LukFiB.txt" : argv[ 1 ] ) << endl;
   return( 1 );
   }
 
- Block *sLukFi = Block::new_Block( "LukFiBlock" );
+ auto sLukFi = Block::new_Block( "LukFiBlock" );
  ProbFile >> *sLukFi;
+ ProbFile.close();
+
  cout << *sLukFi;
+
+ ProbFile.open( argc < 3 ? "BSC.txt" : argv[ 2 ] );
+ if( ! ProbFile.is_open() ) {
+  cerr << "Error: cannot open file " << ( argc < 3 ? "BSC.txt" : argv[ 2 ] )
+       << endl;
+  return( 1 );
+  }
 
  BlockSolverConfig * bsc = new BlockSolverConfig;
  ProbFile >> *( bsc );
+ ProbFile.close();
 
  bsc->apply( sLukFi );
  bsc->clear();
 
- Solver * slvr = (sLukFi->get_registered_solvers()).front();
+ auto slvr = (sLukFi->get_registered_solvers()).front();
 
  // open log-file - - - - - - - - - - -  - - - - - - - - - - - - - - - - - -
  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -83,7 +89,7 @@ int main( int argc , char **argv )
  int rtrn = slvr->compute( false );
 
  LOGFile << std::endl << std::endl << "f* = "
-		 << slvr->get_lb() << " (optimal value)" << std::endl;
+	 << slvr->get_lb() << " (optimal value)" << std::endl;
 
  bsc->apply( sLukFi );
 

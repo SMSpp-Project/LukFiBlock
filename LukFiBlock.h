@@ -30,11 +30,13 @@
 
 #include "Block.h"
 #include "C05Function.h"
-#include "ColVariable.h"
+//#include "ColVariable.h"
 #include "FRowConstraint.h"
 #include "FRealObjective.h"
 #include "OneVarConstraint.h"
-#include "Configuration.h"
+//#include "Configuration.h"
+
+#include <random>
 
 /*--------------------------------------------------------------------------*/
 /*--------------------------- NAMESPACE ------------------------------------*/
@@ -315,7 +317,7 @@ class LukFiFunction : public C05Function {
    intLastParLukF
    };  // end( int_par_type_LukF )
 
-/**@} ----------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*--------------------- PUBLIC METHODS OF THE CLASS ------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------- CONSTRUCTOR AND DESTRUCTOR -------------------------*/
@@ -377,14 +379,17 @@ class LukFiFunction : public C05Function {
 
  /// compute the Function
 
- virtual int compute( bool changedvars = true ) override;
+ int compute( bool changedvars = true ) override;
 
 /*--------------------------------------------------------------------------*/
  /// returns the value of the Function{}
 
- virtual FunctionValue get_value( void ) const override {
-  return( FiVal );
-  }
+ FunctionValue get_value( void ) const override { return( FiVal ); }
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+ /// returns true only if this Function is convex
+
+ bool is_convex( void ) const override { return( true ); }
 
 /*--------------------------------------------------------------------------*/
 /// retrieve the coefficients (g vector) of a linearization in a vector
@@ -393,9 +398,10 @@ class LukFiFunction : public C05Function {
   *
   * This implements the virtual function of class C05Function.  */
 
- virtual void get_linearization_coefficients( FunctionValue * g ,
-     Range range = std::make_pair( 0 , Inf<Index>() ) ,
-	 Index name = Inf<Index>() ) override final;
+ void get_linearization_coefficients( FunctionValue * g ,
+				      Range range = INFRange ,
+				      Index name = Inf< Index >() )
+  override final;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -405,15 +411,15 @@ class LukFiFunction : public C05Function {
   *
   * This implements the virtual function of class C05Function. */
 
- virtual void get_linearization_coefficients( FunctionValue * g ,
-	      c_Subset & subset ,
-	      const bool ordered = false ,
-	      Index name = Inf<Index>() ) override final;
+ void get_linearization_coefficients( FunctionValue * g , c_Subset & subset ,
+				      bool ordered = false ,
+				      Index name = Inf< Index >() )
+  override final;
 
 /*--------------------------------------------------------------------------*/
 
- virtual FunctionValue get_linearization_constant(
-		 Index name = Inf<Index>() ) override final;
+ FunctionValue get_linearization_constant( Index name = Inf< Index >() )
+  override final;
 
 /**@} ----------------------------------------------------------------------*/
 /*------------------- METHODS FOR HANDLING THE PARAMETERS ------------------*/
@@ -421,27 +427,25 @@ class LukFiFunction : public C05Function {
 /** @name Handling the parameters of the LukFiFunction
  *  @{ */
 
- virtual idx_type get_num_int_par( void ) const override
- {
+ idx_type get_num_int_par( void ) const override {
   return( intLastParLukF );
   }
 
 /*--------------------------------------------------------------------------*/
 
- virtual int get_int_par( const idx_type par ) const override;
+ int get_int_par( idx_type par ) const override;
 
 /*--------------------------------------------------------------------------*/
 
- virtual idx_type int_par_str2idx( const std::string & name ) const override;
+ idx_type int_par_str2idx( const std::string & name ) const override;
 
 /*--------------------------------------------------------------------------*/
 
- virtual const std::string & int_par_idx2str( const idx_type idx )
-   const override;
+ const std::string & int_par_idx2str( idx_type idx ) const override;
 
 /*--------------------------------------------------------------------------*/
 
- virtual int get_dflt_int_par( const idx_type par ) const override;
+ int get_dflt_int_par( idx_type par ) const override;
 
 /** @} ---------------------------------------------------------------------*/
 /*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction ---------*/
@@ -515,7 +519,7 @@ class LukFiFunction : public C05Function {
 
  v_col_var v_vars;
  int NameF;       ///< name (number) of the function at point Lambda
- int NrCmp;       ///< number of component functions
+ Index NrCmp;     ///< number of component functions
  int seed;        ///< seed for random number generation
 
  dblVR1 bQR;
@@ -526,6 +530,8 @@ class LukFiFunction : public C05Function {
 
  std::vector<FunctionValue> SubG;
  double FiVal;
+
+ std::mt19937 rg;  ///< base random generator
 
 /*--------------------------------------------------------------------------*/
 
@@ -574,7 +580,7 @@ class LukFiFunction : public C05Function {
 
  virtual ~LukFiBlock() { f.clear(); }
 
-/** @} ----------------------------------------------------------------------*/
+/** @} ---------------------------------------------------------------------*/
 /*-------------------------- OTHER INITIALIZATIONS -------------------------*/
 /*--------------------------------------------------------------------------*/
 /** @name Other initializations
