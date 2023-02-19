@@ -7,7 +7,7 @@
 #   Note that $(SMS++INC) is assumed to include any -I directive             #
 #   corresponding to external libraries needed by SMS++, at least to the     #
 #   extent in which they are needed by the parts of SMS++ used by            #
-#   LukFiBlock.                                            #
+#   LukFiBlock.                                                              #
 #                                                                            #
 #   Input:  $(CC)       = compiler command                                   #
 #           $(SW)       = compiler options                                   #
