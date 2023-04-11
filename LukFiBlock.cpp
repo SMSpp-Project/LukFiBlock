@@ -37,8 +37,9 @@
 /*------------------------- NAMESPACE AND USING ----------------------------*/
 /*--------------------------------------------------------------------------*/
 
-using namespace SMSpp_di_unipi_it;
 using namespace std;
+
+using namespace SMSpp_di_unipi_it;
 
 // vector dblVR2 of size [10,5]
 LukFiBlock::LukFiFunction::dblVR2 A12 = {
