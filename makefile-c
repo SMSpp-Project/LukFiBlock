@@ -18,11 +18,7 @@
 #           $(LukFiH)   = the .h files to include for SimpleMILPBlock        #
 #           $(LukFiINC) = the -I$( SimpleMILPBlock directory )               #
 #                                                                            #
-#                                VERSION 1.00                                #
-#                               20 - 07 - 2018                               #
-#                                                                            #
 #                              Antonio Frangioni                             #
-#                          Operations Research Group                         #
 #                         Dipartimento di Informatica                        #
 #                             Universita' di Pisa                            #
 #                                                                            #
