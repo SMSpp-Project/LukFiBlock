@@ -162,14 +162,14 @@ static void read_T( istream & iStrm , T & t )
 
  switch( c ) {
   case 'I' :
-  case 'i' : t = Inf<T>();
+  case 'i' : t = Inf< T >();
              break;
   case '-' : iStrm.get();
              read_T( iStrm , t );
              t = - t;
              return;
   case 'M' :
-  case 'm' : t = -Inf<T>();
+  case 'm' : t = -Inf< T >();
              break;
   default :  iStrm >> t;
              return;
@@ -657,7 +657,7 @@ LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars )
  GPMaxSz = get_dflt_int_par( intGPMaxSz );
 
  bQR.clear(); aQR.clear(); cQR.clear();
- FiVal = Inf<double>();
+ FiVal = Inf< double >();
 
  } // end ( LukFiFunction::LukFiFunction( ) )
 
@@ -1017,7 +1017,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    FiVal_.resize( NrCmp );
    for( Index j = 0; j < NrCmp; j++ ) {
     std::transform( x.begin() , x.end() , cQR[ j ].begin() , tempL.begin() ,
-		    std::minus<double>() );
+		    std::minus< double >() );
     FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() ,
 							tempL.end() ,
 							tempL.begin() ,
@@ -1057,7 +1057,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
  if( range.second <= range.first )
   return;
 
- if( name < Inf<Index>() )
+ if( name < Inf< Index >() )
   throw( std::logic_error( "the linearization is not available" ) );
 
  // auxiliary variables
@@ -1629,7 +1629,7 @@ switch( NameF ) {
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
 	 std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(),
-			 std::minus<double>() );
+			 std::minus< double >() );
 	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() ,
 							     tempL.end() ,
 							     tempL.begin() ,
@@ -1639,7 +1639,7 @@ switch( NameF ) {
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() ,
 							       FiVal_.end() ) );
     std::transform( x.begin(), x.end(), cQR[FIndex].begin(), SubG.begin(),
-		    std::minus<double>() );
+		    std::minus< double >() );
     Knst = 2.0 * bQR[FIndex];
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
 		    [ Knst ](const auto & p1){ return( p1 * Knst ); } );
@@ -1678,7 +1678,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
 	    FunctionValue * g ,
 	    c_Subset & subset , bool ordered , Index name )
 {
- if( name < Inf<Index>() )
+ if( name < Inf< Index >() )
   throw( std::logic_error( "the linearization is not available" ) );
 
  // auxiliary variables
@@ -2253,7 +2253,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
     FiVal_.resize( NrCmp );
     for( Index j = 0; j < NrCmp; j++ ) {
 	 std::transform( x.begin(), x.end(), cQR[j].begin(), tempL.begin(),
-			 std::minus<double>() );
+			 std::minus< double >() );
 	 FiVal_[ j ] = bQR[ j ] *  sqrt( std::inner_product( tempL.begin() ,
 							     tempL.end() ,
 							     tempL.begin() ,
@@ -2263,7 +2263,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
     FIndex = std::distance( FiVal_.begin() , std::max_element( FiVal_.begin() ,
 							       FiVal_.end() ) );
     std::transform( x.begin(), x.end(), cQR[FIndex].begin(), SubG.begin(),
-		    std::minus<double>() );
+		    std::minus< double >() );
     Knst = 2.0 * bQR[FIndex];
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
 		    [ Knst ](const auto & p1){ return( p1 * Knst ); } );
@@ -2307,7 +2307,7 @@ Function::FunctionValue
           LukFiBlock::LukFiFunction::get_linearization_constant( Index name )
 {
 
- if( name != Inf<Index>() )
+ if( name != Inf< Index >() )
   throw( std::logic_error( "the linearization is not available" ) );
 
  double value_k = FiVal;
