@@ -25,3 +25,5 @@ if (NOT TARGET @modNamespace@::@modName@)
 endif()
 
 set(@modName@_LIBRARIES @modNamespace@::@modName@)
+
+# --------------------------------------------------------------------------- #
