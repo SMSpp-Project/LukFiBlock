@@ -237,20 +237,20 @@ class LukFiFunction : public C05Function {
    virtual bool operator==( const ThinVarDepInterface::v_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast<const LukFiFunction::v_iterator *>( & rhs );
+     auto tmp = static_cast< const LukFiFunction::v_iterator * >( & rhs );
      return( itr_ == tmp->itr_ );
     #else
-     auto tmp = dynamic_cast<const LukFiFunction::v_iterator *>( & rhs );
+     auto tmp = dynamic_cast< const LukFiFunction::v_iterator * >( & rhs );
      return( tmp ? itr_ == tmp->itr_ : false );
     #endif
     }
    virtual bool operator!=( const ThinVarDepInterface::v_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast<const LukFiFunction::v_iterator *>( & rhs );
+     auto tmp = static_cast< const LukFiFunction::v_iterator * >( & rhs );
      return( itr_ != tmp->itr_ );
     #else
-     auto tmp = dynamic_cast<const LukFiFunction::v_iterator *>( & rhs );
+     auto tmp = dynamic_cast< const LukFiFunction::v_iterator * >( & rhs );
      return( tmp ? itr_ != tmp->itr_ : false );
     #endif
     }
@@ -285,10 +285,10 @@ class LukFiFunction : public C05Function {
    virtual bool operator==( const ThinVarDepInterface::v_const_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast<const LukFiFunction::v_const_iterator *>( & rhs );
+     auto tmp = static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( itr_ == tmp->itr_ );
     #else
-     auto tmp = dynamic_cast<const LukFiFunction::v_const_iterator *>( & rhs
+     auto tmp = dynamic_cast< const LukFiFunction::v_const_iterator * >( & rhs
   								       );
      return( tmp ? itr_ == tmp->itr_ : false );
     #endif
@@ -296,10 +296,10 @@ class LukFiFunction : public C05Function {
    virtual bool operator!=( const ThinVarDepInterface::v_const_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast<const LukFiFunction::v_const_iterator *>( & rhs );
+     auto tmp = static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( itr_ != tmp->itr_ );
     #else
-     auto tmp = dynamic_cast<const LukFiFunction::v_const_iterator *>( & rhs );
+     auto tmp = dynamic_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( tmp ? itr_ != tmp->itr_ : false );
     #endif
     }
@@ -528,14 +528,14 @@ class LukFiFunction : public C05Function {
 
  Index GPMaxSz;
 
- std::vector<FunctionValue> SubG;
+ std::vector< FunctionValue > SubG;
  double FiVal;
 
  std::mt19937 rg;  ///< base random generator
 
 /*--------------------------------------------------------------------------*/
 
- const static std::vector<int> dflt_int_par;
+ const static std::vector< int > dflt_int_par;
  ///< the (static const) vector of int parameters default values
 
  const static std::vector< std::string > int_pars_str;
@@ -647,8 +647,8 @@ class LukFiFunction : public C05Function {
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/
 /*--------------------------------------------------------------------------*/
 
- std::vector<ColVariable> x;       /// the variables
- FRealObjective f;                 /// the objective function
+ std::vector< ColVariable > x;       /// the variables
+ FRealObjective f;                   /// the objective function
 
  int NameF;       ///< name (number) of the function at point Lambda
  int NrCmp;       ///< number of component functions

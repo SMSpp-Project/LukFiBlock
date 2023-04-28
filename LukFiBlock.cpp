@@ -219,7 +219,7 @@ const std::vector< std::string > LukFiBlock::LukFiFunction::int_pars_str =
              { "intNrCmp" , "intseed" };
 
 // define and initialize here the default int parameters
-const std::vector<int> LukFiBlock::LukFiFunction::dflt_int_par =
+const std::vector< int > LukFiBlock::LukFiFunction::dflt_int_par =
         {    1,   // intNrCmp
 	     0    // intseed
         };
@@ -312,7 +312,7 @@ void LukFiBlock::load( std::istream & input , char frmt )
  // issue the NBModification - - - - - - - - - - - - - - - - - - - - - - - -
 
  if( anyone_there() )
-  add_Modification( std::make_shared<NBModification>( this ) );
+  add_Modification( std::make_shared< NBModification >( this ) );
 
  }  // end( LukFiBlock::load )
 
