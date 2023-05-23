@@ -12,7 +12,7 @@
  *         Dipartimento di Informatica \n
  *         Universita' di Pisa \n
  *
- * Copyright &copy by Antonio Frangioni
+ * \copyright &copy; by Antonio Frangioni
  */
 /*--------------------------------------------------------------------------*/
 /*---------------------------- IMPLEMENTATION ------------------------------*/
@@ -219,7 +219,7 @@ const std::vector< std::string > LukFiBlock::LukFiFunction::int_pars_str =
              { "intNrCmp" , "intseed" };
 
 // define and initialize here the default int parameters
-const std::vector<int> LukFiBlock::LukFiFunction::dflt_int_par =
+const std::vector< int > LukFiBlock::LukFiFunction::dflt_int_par =
         {    1,   // intNrCmp
 	     0    // intseed
         };
@@ -312,7 +312,7 @@ void LukFiBlock::load( std::istream & input , char frmt )
  // issue the NBModification - - - - - - - - - - - - - - - - - - - - - - - -
 
  if( anyone_there() )
-  add_Modification( std::make_shared<NBModification>( this ) );
+  add_Modification( std::make_shared< NBModification >( this ) );
 
  }  // end( LukFiBlock::load )
 
@@ -325,7 +325,7 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
  // dimensions and variable declarations
  netCDF::NcDim ndim = group.addDim( "num_vars" , x.size() );
 
- auto cmp_cnf = f.get_function()->get_ComputeConfig( );
+ auto cmp_cnf = f.get_function()->get_ComputeConfig();
  netCDF::NcGroup sg_f = group.addGroup( "lukfi_config" );
  cmp_cnf->serialize( sg_f );
 
@@ -659,7 +659,7 @@ LukFiBlock::LukFiFunction::LukFiFunction( int name , v_col_var && vars )
  bQR.clear(); aQR.clear(); cQR.clear();
  FiVal = Inf< double >();
 
- } // end ( LukFiFunction::LukFiFunction( ) )
+ } // end ( LukFiFunction::LukFiFunction )
 
 /*--------------------------------------------------------------------------*/
 
@@ -1046,7 +1046,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
 
  return( FiVal );
 
- }  // end( LukFiFunction::compute() )
+ }  // end( LukFiFunction::compute )
 
 /*--------------------------------------------------------------------------*/
 
@@ -1670,7 +1670,7 @@ switch( NameF ) {
  for( Index i = range.first ; i < range.second ; i++ )
   *(g++) = SubG[ i ];
 
- } // end( LukFiFunction::get_linearization_coefficients() )
+ } // end( LukFiFunction::get_linearization_coefficients( range ) )
 
 /*--------------------------------------------------------------------------*/
 
@@ -2299,7 +2299,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
                                 std::to_string( i ) ) );
   *(g++) = SubG[ i ];
   }
- } // end( LukFiFunction::get_linearization_coefficients() )
+ } // end( LukFiFunction::get_linearization_coefficients( subset ) )
 
 /*--------------------------------------------------------------------------*/
 
@@ -2316,7 +2316,7 @@ Function::FunctionValue
 
  return( value_k );
 
- } // end( LukFiFunction::get_linearization_coefficients() )
+ } // end( LukFiFunction::get_linearization_constant )
 
 /*--------------------------------------------------------------------------*/
 
@@ -2330,7 +2330,7 @@ ThinVarDepInterface::Index LukFiBlock::LukFiFunction::is_active(
  return( idx != v_vars.end() ? std::distance( v_vars.begin(), idx )
  	                       : Inf< Index >() );
 
- } // end( LukFiFunction::is_active( Variable* ) )
+ } // end( LukFiFunction::is_active )
 
 /*--------------------------------------------------------------------------*/
 
@@ -2366,7 +2366,7 @@ void LukFiBlock::LukFiFunction::map_active( c_Vec_p_Var & vars ,
    *(it++) = i;
    }
   }
- }  // end( LukFiFunction::map_active( Variable* ) )
+ }  // end( LukFiFunction::map_active )
 
 /*--------------------------------------------------------------------------*/
 /*------------------- METHODS FOR HANDLING THE PARAMETERS ------------------*/
@@ -2422,7 +2422,7 @@ const std::string & LukFiBlock::LukFiFunction::int_par_idx2str(
   return( int_pars_str[ idx - intLastParC05F ] );
  else
   return( C05Function::int_par_idx2str( idx ) );
- } // end( LukFiFunction::iint_par_idx2str )
+ } // end( LukFiFunction::int_par_idx2str )
 
 /*--------------------------------------------------------------------------*/
 /*--------------------- End File LukFiBlock.cpp ----------------------------*/
