@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2023-05-23
+
 ### Fixed
 
 - updated long-neglected code to current testing and interface
   standards
-
 
 ## [0.3.0] - 2021-02-05
 
@@ -31,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First test release.
 
-[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.0...develop
+[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.1...develop
+[0.3.1]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.0...0.3.1
 [0.3.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.2.0...0.3.0
 [0.2.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.1.0...0.2.0
 [0.1.0]: https://gitlab.com/smspp/lukfiblock/-/tags/0.1.0
