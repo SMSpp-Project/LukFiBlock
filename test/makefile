@@ -24,7 +24,7 @@ SW = -g3 -glldb -fno-inline -std=c++17 -ferror-limit=1 -fsanitize=undefined -fsa
 #SW = -O3 -DNDEBUG -std=c++17  
 
 # compiler
-CC = clang++ 
+CC = clang++
 
 # default target- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
