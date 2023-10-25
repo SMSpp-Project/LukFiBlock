@@ -33,8 +33,8 @@
 # *INC is the -I< include directories >
 
 # define input macros for SMS++ complete makefile, then include it
-SMS++SDR = $(LukFiSDR)../SMS++/
-include $(SMS++SDR)makefile-c
+SMS++SDR = $(LukFiSDR)../SMS++
+include $(SMS++SDR)/makefile-c
 
 # include the makefile requiring all external modules in input
 include $(LukFiSDR)/makefile
