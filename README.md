@@ -1,7 +1,9 @@
 # LukFiBlock
 
-Implementation of the Block and C05Function classes for some non-smooth functions.
-The block contains a FRealObjective whose the function is a C05Function type.
+Implementation of the `Block` and `C05Function` classes for a bunch of
+classical "academic"non-smooth test functions. The `Block` contains a
+`FRealObjective` whose function is a `C05Function`.
+
 
 ## Getting started
 
@@ -40,15 +42,44 @@ find_package(LukFiBlock)
 target_link_libraries(<my_target> SMS++::LukFiBlock)
 ```
 
+### Build and install with makefiles
+
+Carefully hand-crafted makefiles have also been developed for those unwilling
+to use CMake. Makefiles build the executable in-source (in the same directory
+tree where the code is) as opposed to out-of-source (in the copy of the
+directory tree constructed in the build/ folder) and therefore it is more
+convenient when having to recompile often, such as when developing/debugging
+a new module, as opposed to the compile-and-forget usage envisioned by CMake.
+
+Each executable using `LukFiBlock` has to include a "main makefile" of the
+module, which typically is either [makefile-c](makefile-c) including all
+necessary libraries comprised the "core SMS++" one, or
+[makefile](makefile) which just defines the `Block` (which does not depend
+on any other module or external lobrary). One relevant case is the
+[LukFiBlock tester in the tests/ repo](https://gitlab.com/smspp/tests/-/blob/develop/LukFiBlock/main.cpp?ref_type=heads).
+The makefiles in turn recursively include all the required other makefiles,
+hence one should only need to edit the "main makefile" for compilation type
+(C++ compiler and its options) and it all should be good to go. In case some
+of the external libraries are not at their default location, it should only be
+necessary to create the `../extlib/makefile-paths` out of the
+`extlib/makefile-default-paths-*` for your OS `*` and edit the relevant bits
+(commenting out all the rest).
+
+Check the [SMS++ installation wiki](https://gitlab.com/smspp/smspp-project/-/wikis/Customize-the-configuration#location-of-required-libraries)
+for further details.
+
+
 ## Getting help
 
 If you need support, you want to submit bugs or propose a new feature, you can
 [open a new issue](https://gitlab.com/smspp/lukfiblock/-/issues/new).
 
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of
 conduct, and the process for submitting merge requests to us.
+
 
 ## Authors
 
@@ -58,11 +89,17 @@ conduct, and the process for submitting merge requests to us.
   Dipartimento di Informatica  
   Università di Pisa
 
+- **Enrico Gorgone**  
+  Dipartimento di Matematica ed Informatica  
+  Università di Cagliari
+
+
 ## License
 
 This code is provided free of charge under the [GNU Lesser General Public
 License version 3.0](https://opensource.org/licenses/lgpl-3.0.html) -
 see the [LICENSE](LICENSE) file for details.
+
 
 ## Disclaimer
 
