@@ -959,7 +959,7 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 21 ):
    FiVal_.resize(x.size());
-   for( Index i = 0; i < x.size(); i++ ){
+   for( Index i = 0; i < x.size(); i++ ) {
 	FiVal_[i] = double(0);
     for ( Index j = 0; j < x.size() ; j++ )
      FiVal_[i] += double(x[j]) / ( (i+1) + (j+1) -1 );
@@ -1642,7 +1642,7 @@ switch( NameF ) {
 		    std::minus< double >() );
     Knst = 2.0 * bQR[FIndex];
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
-		    [ Knst ](const auto & p1){ return( p1 * Knst ); } );
+		    [ Knst ](const auto & p1 ) { return( p1 * Knst ); } );
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2266,7 +2266,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
 		    std::minus< double >() );
     Knst = 2.0 * bQR[FIndex];
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
-		    [ Knst ](const auto & p1){ return( p1 * Knst ); } );
+		    [ Knst ](const auto & p1 ) { return( p1 * Knst ); } );
     break;
    // Lewis  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

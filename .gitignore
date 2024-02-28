@@ -1,9 +1,6 @@
 LukFiBlock.o
 LukFiFunction.o
-test/LukFiMain
-test/main.o
 .settings/language.settings.xml
 .project
 .cproject
 .DS_Store
-test/*log*

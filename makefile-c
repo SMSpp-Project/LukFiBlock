@@ -6,7 +6,7 @@
 #                                                                            #
 #   The makefile defines internally all external libraries (comprised the    #
 #   SMS++ one) required by SimpleMILPBlock. Accordingly, all necessary OBJ,  #
-#   H, -I directives, external libraries + -L<libdirs> are added to the      #
+#   H, -I directives, external libraries + -L< libdirs > are added to the    #
 #   corresponding LukFi* macros.                                             #
 #                                                                            #
 #   Input:  $(CC)       = compiler command                                   #
@@ -14,7 +14,7 @@
 #           $(LukFiSDR) = the directory where LukFiBlock source is           #
 #                                                                            #
 #   Output: $(LukFiOBJ) = the final object(s) / library                      #
-#           $(LukFiLIB) = external libraries + -L<libdirs>                   #
+#           $(LukFiLIB) = external libraries + -L< libdirs >                 #
 #           $(LukFiH)   = the .h files to include for SimpleMILPBlock        #
 #           $(LukFiINC) = the -I$( SimpleMILPBlock directory )               #
 #                                                                            #
@@ -30,16 +30,16 @@
 # each module outputs some macros to be used here:
 # *OBJ is the final object/library
 # *H   is the list of all include files
-# *INC is the -I<include directories>
+# *INC is the -I< include directories >
 
 # define input macros for SMS++ complete makefile, then include it
-SMS++SDR = $(LukFiSDR)../SMS++/
-include $(SMS++SDR)makefile-c
+SMS++SDR = $(LukFiSDR)../SMS++
+include $(SMS++SDR)/makefile-c
 
 # include the makefile requiring all external modules in input
 include $(LukFiSDR)/makefile
 
-# macroes to be exported- - - - - - - - - - - - - - - - - - - - - - - - - - -
+# macros to be exported - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # append external -I directives to MILPBINC, MILPBOBJ and MILPBH as defined
 # by the makefile, thus the := assignment has to be used (use GNU make)
@@ -47,7 +47,7 @@ LukFiOBJ := $(LukFiOBJ) $(SMS++OBJ)
 LukFiH := $(LukFiH) $(SMS++H)
 LukFiINC := $(SMS++INC) $(LukFiINC)
 
-# external libreries for LukFiBlock
+# external libraries for LukFiBlock
 LukFiLIB = $(SMS++LIB)
 
 ############################ End of makefile #################################
