@@ -22,7 +22,7 @@
 cmake_minimum_required(VERSION 3.19)
 cmake_policy(VERSION 3.12)
 project(LukFiBlock
-        VERSION 0.3.1
+        VERSION 0.3.2
         DESCRIPTION "SMS++ LukFiBlock module"
         HOMEPAGE_URL https://gitlab.com/smspp/lukfiblock
         LANGUAGES C CXX)
