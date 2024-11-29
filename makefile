@@ -28,7 +28,7 @@
 
 # macros to be exported - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-LukFiOBJ = $(LukFiSDR)/LukFiBlock.o
+LukFiOBJ = $(LukFiSDR)/obj/LukFiBlock.o
 
 LukFiINC = -I$(LukFiSDR)
 
@@ -41,8 +41,8 @@ clean::
 
 # dependencies: every .o from its .cpp + every recursively included .h- - - -
 
-$(LukFiSDR)/LukFiBlock.o: $(LukFiSDR)/LukFiBlock.cpp \
-	$(LukFiSDR)/LukFiBlock.h $(SMS++OBJ)
+$(LukFiSDR)/obj/LukFiBlock.o: $(LukFiSDR)/src/LukFiBlock.cpp \
+	$(LukFiSDR)/include/LukFiBlock.h $(SMS++OBJ)
 	$(CC) -c $*.cpp -o $@ $(LukFiINC) $(SMS++INC) $(SW)
 
 ########################## End of makefile ###################################
