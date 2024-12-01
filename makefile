@@ -30,9 +30,9 @@
 
 LukFiOBJ = $(LukFiSDR)/obj/LukFiBlock.o
 
-LukFiINC = -I$(LukFiSDR)
+LukFiINC = -I$(LukFiSDR)/include
 
-LukFiH   = $(LukFiSDR)/LukFiBlock.h
+LukFiH   = $(LukFiSDR)/include/LukFiBlock.h
 
 # clean - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -41,8 +41,9 @@ clean::
 
 # dependencies: every .o from its .cpp + every recursively included .h- - - -
 
-$(LukFiSDR)/obj/LukFiBlock.o: $(LukFiSDR)/src/LukFiBlock.cpp \
-	$(LukFiSDR)/include/LukFiBlock.h $(SMS++OBJ)
-	$(CC) -c $*.cpp -o $@ $(LukFiINC) $(SMS++INC) $(SW)
+$(LukFiSDR)/obj/LukFiBlock.o: $(LukFiSDR)/src/LukFiBlock.cpp $(LukFiH) \
+	$(SMS++OBJ)
+	$(CC) -c $(LukFiSDR)/src/LukFiBlock.cpp -o $@ \
+	$(LukFiINC) $(SMS++INC) $(SW)
 
 ########################## End of makefile ###################################
