@@ -52,7 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First test release.
 
-[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.1...develop
+[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.2...develop
+[0.3.2]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.1...0.3.2
 [0.3.1]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.0...0.3.1
 [0.3.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.2.0...0.3.0
 [0.2.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.1.0...0.2.0

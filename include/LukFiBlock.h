@@ -384,12 +384,12 @@ class LukFiFunction : public C05Function {
 /*--------------------------------------------------------------------------*/
  /// returns the value of the Function{}
 
- FunctionValue get_value( void ) const override { return( FiVal ); }
+ FunctionValue get_value( void ) override { return( FiVal ); }
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
  /// returns true only if this Function is convex
 
- bool is_convex( void ) const override { return( true ); }
+ bool is_convex( void ) override { return( true ); }
 
 /*--------------------------------------------------------------------------*/
 /// retrieve the coefficients (g vector) of a linearization in a vector
@@ -511,7 +511,7 @@ class LukFiFunction : public C05Function {
  *  @{ */
 
  /// printing the LukFiFunction
- void print( std::ostream & output ) const override {}
+ void print( std::ostream & output ) override {}
 
 /** @} ---------------------------------------------------------------------*/
 /*--------------------------- PROTECTED FIELDS  ----------------------------*/
