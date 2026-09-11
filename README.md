@@ -93,6 +93,8 @@ conduct, and the process for submitting merge requests to us.
   Dipartimento di Matematica ed Informatica  
   Università di Cagliari
 
+### Contributors
+
 
 ## License
 
