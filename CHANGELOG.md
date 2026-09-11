@@ -7,11 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added 
+### Added
 
-### Changed 
+### Changed
 
-### Fixed 
+### Fixed
+
+## [0.4.0] - 2026-09-12
+
+### Changed
+
+- the version of the module is the git tag of its repository, or the
+  VERSION.txt of a release tarball, and the shared library carries it: its
+  SONAME is major.minor while the major is 0, and it is installed with an
+  RPATH relative to itself, so that an installed tree keeps working wherever
+  it is moved
+
+### Fixed
+
+- the global structures of the test functions are static, so that the library
+  links on macOS with no duplicate symbol
 
 ## [0.3.2] - 2024-02-28
 
@@ -52,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First test release.
 
-[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.2...develop
+[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.4.0...develop
+[0.4.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.2...0.4.0
 [0.3.2]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.1...0.3.2
 [0.3.1]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.0...0.3.1
 [0.3.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.2.0...0.3.0
