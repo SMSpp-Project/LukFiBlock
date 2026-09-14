@@ -10,7 +10,7 @@ classical "academic"non-smooth test functions. The `Block` contains a
 These instructions will let you build LukFiBlock on your system.
 
 The module also comes ready-made: `sudo apt install libsmspp-lukfi-dev` from
-the [PPA of the project](https://launchpad.net/~smspp/+archive/ubuntu/ppa), and
+the [PPA of the project](https://launchpad.net/~smspp-project/+archive/ubuntu/smspp), and
 `vcpkg install "smspp[core,lukfi]"` from the [SMS++ vcpkg
 registry](https://gitlab.com/smspp/vcpkg-registry); `conda install -c
 conda-forge smspp-project` and `brew install smspp`, from the [tap of the
