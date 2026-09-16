@@ -1312,7 +1312,8 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    break;
   }
 
- return( FiVal );
+ // the value is in FiVal, what compute() returns is the status
+ return( kOK );
 
  }  // end( LukFiFunction::compute )
 
