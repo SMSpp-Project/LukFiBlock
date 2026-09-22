@@ -823,14 +823,14 @@ void LukFiBlock::SetInitialPoint( void )
    for( decltype( x.size() ) i = 0 ; i < 10 ; i++ )
     x[ i ].set_value( i + 1 );
    for( decltype( x.size() ) i = 10 ; i < 20 ; i++ )
-    x[ i ].set_value( -i - 1 );
+    x[ i ].set_value( - double( i ) - 1 );
    break;
   // Maxl    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 15 ):
    for( decltype( x.size() ) i = 0 ; i < 10 ; i++ )
     x[ i ].set_value( i + 1 );
    for( decltype( x.size() ) i = 10 ; i < 20 ; i++ )
-    x[ i ].set_value( -i - 1 );
+    x[ i ].set_value( - double( i ) - 1 );
    break;
   // TR48    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case( 16 ):
