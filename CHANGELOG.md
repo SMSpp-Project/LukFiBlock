@@ -11,8 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- whoever links the module keeps it: the classes of a module register
+  themselves in the factory from a static initialiser, and a linker that
+  drops what looks unused takes the registration away with it, so the target
+  now tells whoever links it to keep the symbol that forces the module in,
+  and on ELF, where naming the symbol is not enough, the library as a whole
 ### Fixed
 
+- the starting point of `Maxq` and `Maxl` has `x_i = - i - 1` computed in
+  double, the subtraction of an unsigned index from zero having given a very
+  large number instead of a negative one
+- `LukFiFunction::compute()` returns a status, as the interface asks, and not
+  the value of the function, which is read with `get_value()` as everywhere
+  else
 ## [0.4.0] - 2026-09-12
 
 ### Changed
