@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- on macOS a program linking the module lost the classes the module
+  registers in the factories when the linker dropped the library, as it
+  does under `-dead_strip_dylibs`, which conda sets: the target now asks the
+  linker for the symbol that forces the module in (`-u`), which ld64,
+  unlike the ELF linker, counts as a use of the library
+
 - the starting point of `Maxq` and `Maxl` has `x_i = - i - 1` computed in
   double, the subtraction of an unsigned index from zero having given a very
   large number instead of a negative one
