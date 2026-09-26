@@ -555,7 +555,7 @@ void LukFiBlock::load( std::istream & input , char frmt )
   throw( std::logic_error( "loading a non-empty LukFiBlock" ) );
 
  NameF = read_int( input );
-  if( NameF < 1 || NameF > 29 )
+  if( NameF < 1 || NameF > 26 )
    throw( std::invalid_argument( "invalid name of function" ) );
 
  int n = read_int( input );
@@ -592,10 +592,15 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
 
  // dimensions and variable declarations
  netCDF::NcDim ndim = group.addDim( "num_vars" , x.size() );
+ group.addDim( "name_f" , NameF );
 
+ // a ComputeConfig with all the parameters at their default is none
  auto cmp_cnf = f.get_function()->get_ComputeConfig();
- netCDF::NcGroup sg_f = group.addGroup( "lukfi_config" );
- cmp_cnf->serialize( sg_f );
+ if( cmp_cnf ) {
+  netCDF::NcGroup sg_f = group.addGroup( "lukfi_config" );
+  cmp_cnf->serialize( sg_f );
+  delete cmp_cnf;
+  }
 
  }  // end( LukFiBlock::serialize )
 
@@ -603,31 +608,36 @@ void LukFiBlock::serialize( netCDF::NcGroup & group ) const
 
 void LukFiBlock::deserialize( const netCDF::NcGroup & group )
 {
+ if( x.size() )
+  throw( std::logic_error( "deserializing a non-empty LukFiBlock" ) );
+
  netCDF::NcDim n_dim  = group.getDim( "num_vars" );
  size_t n = n_dim.getSize();
 
  netCDF::NcDim name_f = group.getDim( "name_f" );
+ if( name_f.isNull() )
+  throw( std::invalid_argument( "name_f dimension not found" ) );
  NameF = name_f.getSize();
+ if( NameF < 1 || NameF > 26 )
+  throw( std::invalid_argument( "invalid name of function" ) );
 
  SetDimension( n );
 
- LukFiFunction::v_col_var vars( x.size() );
- for( size_t i = 0 ; i < n ; i++ ) {
-  x[ i ].set_Block( this );
-  vars[ i ] = &x[ i ];
-  }
-
+ // as in load(), the Variable and the Objective are those of the Block
+ generate_abstract_variables();
  SetInitialPoint();
+ generate_objective();
 
- f.set_function( new LukFiFunction( NameF , std::move( vars ) ) , eNoMod );
- f.set_Block( this );
-
+ // no ComputeConfig means all the parameters at their default
  netCDF::NcGroup sg_f = group.getGroup( "lukfi_config" );
-
- auto cmp_cnf = dynamic_cast< ComputeConfig * >(
+ ComputeConfig * cmp_cnf = nullptr;
+ if( ! sg_f.isNull() )
+  cmp_cnf = dynamic_cast< ComputeConfig * >(
 		    Configuration::new_Configuration( sg_f ) );
  f.get_function()->set_ComputeConfig( cmp_cnf );
  delete cmp_cnf;
+
+ Block::deserialize( group );
 
  }  // end( LukFiBlock::deserialize )  - - - - - - - - - - - - - - - - - - - -
 
@@ -1270,8 +1280,13 @@ int LukFiBlock::LukFiFunction::compute( bool changedvars )
    cQR.resize( NrCmp );
 
    // define data- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+   // a uniform in ( - 0.5 , 0.5 ] is drawn as 0.5 - u, u uniform in
+   // [ 0 , 1 ), the same number a distribution with the bounds swapped
+   // would give, without the undefined behaviour of a > b
    std::uniform_real_distribution<> dis01( 0.0 , 1.0 );
-   std::uniform_real_distribution<> dis5m5( 0.5 , - 0.5 );
+   auto dis5m5 = [ & dis01 ]( std::mt19937 & g ) {
+    return( 0.5 - dis01( g ) );
+    };
 
    for( Index j = 0 ; j < NrCmp ; j++ ) {
     bQR[ j ] = 1e+2 * dis01( rg );
@@ -1533,7 +1548,7 @@ switch( NameF ) {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 10 ):
    if( x[0] >= std::abs( x[1] ) ) {
- 	 SubG[0] = (x[0]==0) ? 0 : double(45) * x[0] /
+ 	 SubG[0] = (x[0]==0) ? double(15) : double(45) * x[0] /
 	           std::sqrt( double(9) * x[0] * x[0]
   	   + double(16) * x[1] * x[1] );
      SubG[1] = (x[1]==0) ? 0 : double(80) * x[1] /
@@ -1542,7 +1557,7 @@ switch( NameF ) {
   	 }
    else
     if ( x[0] < std::abs( x[1] ) &&  x[0] > double(0) ) {
-      SubG[0] = double(9) * x[0];
+      SubG[0] = double(9);
       SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
       }
     else {
@@ -1705,7 +1720,7 @@ switch( NameF ) {
            x.begin() , double(0) );
    if( FiVal_[FIndex] >  double(0) )
    for ( Index j = 0; j < x.size() ; j++ )
-    SubG[j] += double(50) * A13[ FIndex ][ j ];
+    SubG[j] -= double(50) * A13[ FIndex ][ j ];
    break;
   // HS78  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1796,37 +1811,38 @@ switch( NameF ) {
 
    if( FIndex == 0 )
     for( Index i = 0; i < x.size() ; i++ )
-       SubG[i] = double(2) * ( x[i] - double(1) ) + 4e-3
-                         * std::pow( std::pow( x[i] , 2 ) - 0.25, 2 )
-                            * x[i];
+     SubG[i] = double(2) * ( x[i] - double(1) ) + 4e-3
+               * ( std::pow( x[i] , 2 ) - 0.25 ) * x[i];
    else
     if( FIndex == 1 ) {
-     double GiVal1;
-     for( Index i = 1; i < 30; i++ )
-     for( Index j = 0; j < x.size() ; j++ ) {
-     SubG[j] = 0;
-     GiVal1 = 0;
-     for( Index k = 0; k < x.size(); k++ ) {
-      GiVal1 += x[k] * std::pow( ( double(i) / 29) , k );
-      SubG[j] += x[k] * ( k ) * std::pow( ( double(i) / 29 ) , k-1 );
+     // r_i = sum_j j x_j t^(j-1) - ( sum_j x_j t^j )^2 - 1, t = i / 29
+     for( Index i = 1; i < 30; i++ ) {
+      const double t = double(i) / 29;
+      double S = 0;
+      double D = 0;
+      for( Index j = 0; j < x.size(); j++ ) {
+       S += x[j] * std::pow( t , double( j ) );
+       if( j > 0 )
+        D += x[j] * double( j ) * std::pow( t , double( j ) - 1 );
+       }
+      const double r = D - S * S - double(1);
+      for( Index j = 0; j < x.size(); j++ ) {
+       double dr = - double(2) * S * std::pow( t , double( j ) );
+       if( j > 0 )
+        dr += double( j ) * std::pow( t , double( j ) - 1 );
+       SubG[j] += double(2) * r * dr;
+       }
       }
-     SubG[j] -= std::pow( GiVal1 , 2 ) +  double(1);
-     SubG[j] *= double(2) * ( x[j] * ( j )
-                             * std::pow( ( double(i) / 29) , j-1 ) - double(2)
-                             * GiVal1 * std::pow( ( double(i) / 29 ) , j-1 ) );
+     SubG[0] += double(2) * x[0] - double(4) *
+                ( x[1] - std::pow( x[0] , 2 ) - double(1) ) * x[0];
+     SubG[1] += double(2) * ( x[1] - std::pow( x[0] , 2 ) - double(1) );
      }
-    SubG[0] += double(2) * x[0] - double(4) *
-                    ( x[1] - std::pow( x[0] , 2 ) - double(1) )
-                           * x[0];
-    SubG[1] += double(2) * ( x[1] - std::pow( x[0] , 2 ) - double(1) );
-    }
-   else {
-    for ( Index i = 1 ; i < x.size() ; i++ )
-      SubG[i] += double(200) * ( x[i] - std::pow( x[i-1],2 ) )
-                 + double(-2) * ( double(1) - x[i] ) - double(400)
-                 * ( x[i+1] - std::pow( x[i] , 2 ) ) * x[i];
-    SubG[0] += - double(400) * ( x[1] - std::pow( x[0] , 2 ) ) * x[0];
-    }
+    else
+     for( Index i = 1 ; i < x.size() ; i++ ) {
+      SubG[i] += double(200) * ( x[i] - std::pow( x[i-1] , 2 ) )
+                 - double(2) * ( double(1) - x[i] );
+      SubG[i-1] -= double(400) * ( x[i] - std::pow( x[i-1] , 2 ) ) * x[i-1];
+      }
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1909,7 +1925,11 @@ switch( NameF ) {
 							       FiVal_.end() ) );
     std::transform( x.begin(), x.end(), cQR[FIndex].begin(), SubG.begin(),
 		    std::minus< double >() );
-    Knst = 2.0 * bQR[FIndex];
+    // the gradient b_j ( x - c_j ) / || x - c_j || of the active piece; at
+    // x = c_j any vector of norm at most b_j is a subgradient, and 0 is used
+    Knst = std::sqrt( std::inner_product( SubG.begin() , SubG.end() ,
+					  SubG.begin() , double( 0 ) ) );
+    Knst = ( Knst > 0 ) ? bQR[FIndex] / Knst : 0;
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
 		    [ Knst ](const auto & p1 ) { return( p1 * Knst ); } );
     break;
@@ -2154,16 +2174,16 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   case ( 10 ):
     if( x[0] >= std::abs( x[1] ) ) {
-  	 SubG[0] = double(45) * x[0] /
+  	 SubG[0] = (x[0]==0) ? double(15) : double(45) * x[0] /
 	           std::sqrt( double(9) * x[0] * x[0]
   	   + double(16) * x[1] * x[1] );
-     SubG[1] = double(80) * x[1] /
+     SubG[1] = (x[1]==0) ? 0 : double(80) * x[1] /
                std::sqrt( double(9) * x[0] * x[0]
 			  + double(16) * x[1] * x[1] );
   	 }
     else
      if ( x[0] < std::abs( x[1] ) &&  x[0] > double(0) ) {
-      SubG[0] = double(9) * x[0];
+      SubG[0] = double(9);
       SubG[1] = double(16) * ( x[1] >= double(0)? double(1): -double(1) );
       }
      else {
@@ -2328,7 +2348,7 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
            x.begin() , double(0) );
    if( FiVal_[FIndex] >  double(0) )
    for ( Index j = 0; j < x.size() ; j++ )
-    SubG[j] += double(50) * A13[ FIndex ][ j ];
+    SubG[j] -= double(50) * A13[ FIndex ][ j ];
   break;
   // HS78  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2420,37 +2440,38 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
 
    if( FIndex == 0 )
     for( Index i = 0; i < x.size() ; i++ )
-       SubG[i] = double(2) * ( x[i] - double(1) ) + 4e-3
-                         * std::pow( std::pow( x[i] , 2 ) - 0.25, 2 )
-                            * x[i];
+     SubG[i] = double(2) * ( x[i] - double(1) ) + 4e-3
+               * ( std::pow( x[i] , 2 ) - 0.25 ) * x[i];
    else
     if( FIndex == 1 ) {
-     double GiVal1;
-     for( Index i = 1; i < 30; i++ )
-     for( Index j = 0; j < x.size() ; j++ ) {
-     SubG[j] = 0;
-     GiVal1 = 0;
-     for( Index k = 0; k < x.size(); k++ ) {
-      GiVal1 += x[k] * std::pow( ( double(i) / 29) , k );
-      SubG[j] += x[k] * ( k ) * std::pow( ( double(i) / 29 ) , k-1 );
+     // r_i = sum_j j x_j t^(j-1) - ( sum_j x_j t^j )^2 - 1, t = i / 29
+     for( Index i = 1; i < 30; i++ ) {
+      const double t = double(i) / 29;
+      double S = 0;
+      double D = 0;
+      for( Index j = 0; j < x.size(); j++ ) {
+       S += x[j] * std::pow( t , double( j ) );
+       if( j > 0 )
+        D += x[j] * double( j ) * std::pow( t , double( j ) - 1 );
+       }
+      const double r = D - S * S - double(1);
+      for( Index j = 0; j < x.size(); j++ ) {
+       double dr = - double(2) * S * std::pow( t , double( j ) );
+       if( j > 0 )
+        dr += double( j ) * std::pow( t , double( j ) - 1 );
+       SubG[j] += double(2) * r * dr;
+       }
       }
-     SubG[j] -= std::pow( GiVal1 , 2 ) +  double(1);
-     SubG[j] *= double(2) * ( x[j] * ( j )
-                             * std::pow( ( double(i) / 29) , j-1 ) - double(2)
-                             * GiVal1 * std::pow( ( double(i) / 29 ) , j-1 ) );
+     SubG[0] += double(2) * x[0] - double(4) *
+                ( x[1] - std::pow( x[0] , 2 ) - double(1) ) * x[0];
+     SubG[1] += double(2) * ( x[1] - std::pow( x[0] , 2 ) - double(1) );
      }
-    SubG[0] += double(2) * x[0] - double(4) *
-                    ( x[1] - std::pow( x[0] , 2 ) - double(1) )
-                           * x[0];
-    SubG[1] += double(2) * ( x[1] - std::pow( x[0] , 2 ) - double(1) );
-    }
-   else {
-    for ( Index i = 1 ; i < x.size() ; i++ )
-      SubG[i] += double(200) * ( x[i] - std::pow( x[i-1],2 ) )
-                 + double(-2) * ( double(1) - x[i] ) - double(400)
-                 * ( x[i+1] - std::pow( x[i] , 2 ) ) * x[i];
-    SubG[0] += - double(400) * ( x[1] - std::pow( x[0] , 2 ) ) * x[0];
-    }
+    else
+     for( Index i = 1 ; i < x.size() ; i++ ) {
+      SubG[i] += double(200) * ( x[i] - std::pow( x[i-1] , 2 ) )
+                 - double(2) * ( double(1) - x[i] );
+      SubG[i-1] -= double(400) * ( x[i] - std::pow( x[i-1] , 2 ) ) * x[i-1];
+      }
    break;
   // Goffin  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2533,7 +2554,11 @@ void LukFiBlock::LukFiFunction::get_linearization_coefficients(
 							       FiVal_.end() ) );
     std::transform( x.begin(), x.end(), cQR[FIndex].begin(), SubG.begin(),
 		    std::minus< double >() );
-    Knst = 2.0 * bQR[FIndex];
+    // the gradient b_j ( x - c_j ) / || x - c_j || of the active piece; at
+    // x = c_j any vector of norm at most b_j is a subgradient, and 0 is used
+    Knst = std::sqrt( std::inner_product( SubG.begin() , SubG.end() ,
+					  SubG.begin() , double( 0 ) ) );
+    Knst = ( Knst > 0 ) ? bQR[FIndex] / Knst : 0;
     std::transform( SubG.begin(), SubG.end(), SubG.begin(),
 		    [ Knst ](const auto & p1 ) { return( p1 * Knst ); } );
     break;
@@ -2665,7 +2690,7 @@ int LukFiBlock::LukFiFunction::get_int_par( idx_type par ) const
    return( seed );
    break;
   default:
-   return( C05Function::get_dflt_int_par( par ) );
+   return( C05Function::get_int_par( par ) );
   }
  } // end( LukFiFunction::get_int_par )
 
