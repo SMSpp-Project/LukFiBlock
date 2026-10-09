@@ -158,8 +158,11 @@ namespace SMSpp_di_unipi_it
      opt. value = not defined
 
   26. Lewis   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-     - convex
-     opt. value = 0       */
+     - nonconvex, piecewise quadratic and continuous: x_0^2 - x_1 for
+       x_1 <= 0, x_0^2 + x_1 for 0 < x_1 < x_0^2, 3 x_0^2 - x_1 for
+       x_0^2 <= x_1 <= 4 x_0^2 (x_0 != 0), - 5 x_0^2 + x_1 above
+     - unbounded below, f( t , 4 t^2 ) = - t^2; the origin, where f = 0, is
+       a stationary point but not a minimum   */
 
 class LukFiBlock : public Block {
 
