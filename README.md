@@ -1,5 +1,11 @@
 # LukFiBlock
 
+[![Pipeline](https://gitlab.com/smspp/lukfiblock/badges/develop/pipeline.svg)](https://gitlab.com/smspp/lukfiblock/-/pipelines?ref=develop)
+[![Release](https://gitlab.com/smspp/lukfiblock/-/badges/release.svg)](https://gitlab.com/smspp/lukfiblock/-/releases)
+[![Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://smspp.gitlab.io/smspp-project/)
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 Implementation of the `Block` and `C05Function` classes for a bunch of
 classical "academic"non-smooth test functions. The `Block` contains a
 `FRealObjective` whose function is a `C05Function`.
