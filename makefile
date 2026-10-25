@@ -34,6 +34,12 @@ LukFiINC = -I$(LukFiSDR)/include
 
 LukFiH   = $(LukFiSDR)/include/LukFiBlock.h
 
+# the C++20 module smspp.lukfiblock - - - - - - - - - - - - - - - - - - - - -
+# [see makefile-mod of SMS++]
+
+$(eval $(call SMSppMODrule,LukFi,$(LukFiSDR),LukFiBlock,smspp.lukfiblock,\
+	$(SMS++MOD)))
+
 # clean - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 clean::
