@@ -38,7 +38,7 @@ LukFiH   = $(LukFiSDR)/include/LukFiBlock.h
 # [see makefile-mod of SMS++]
 
 $(eval $(call SMSppMODrule,LukFi,$(LukFiSDR),LukFiBlock,smspp.lukfiblock,\
-	$(SMS++MOD)))
+	SMS++))
 
 # clean - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
