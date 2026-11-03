@@ -1,5 +1,11 @@
 # LukFiBlock
 
+[![Pipeline](https://gitlab.com/smspp/lukfiblock/badges/develop/pipeline.svg)](https://gitlab.com/smspp/lukfiblock/-/pipelines?ref=develop)
+[![Release](https://gitlab.com/smspp/lukfiblock/-/badges/release.svg)](https://gitlab.com/smspp/lukfiblock/-/releases)
+[![Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://smspp.gitlab.io/smspp-project/)
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 Implementation of the `Block` and `C05Function` classes for a bunch of
 classical "academic"non-smooth test functions. The `Block` contains a
 `FRealObjective` whose function is a `C05Function`.
@@ -9,22 +15,10 @@ classical "academic"non-smooth test functions. The `Block` contains a
 
 These instructions will let you build LukFiBlock on your system.
 
-The module also comes ready-made, in any of
-
-```sh
-sudo add-apt-repository ppa:smspp-project/smspp   # Ubuntu
-sudo apt install libsmspp-lukfi-dev
-
-conda install -c conda-forge smspp-project        # Linux, macOS, Windows
-
-brew tap SMSpp-Project/smspp                      # macOS, Linux
-brew install smspp
-
-vcpkg install "smspp[core,lukfi]"                 # from the sources
-```
-
-where apt and the port give the module alone, while conda and the tap carry
-the whole framework. What follows is about building it yourself.
+The module also comes ready-made: on Ubuntu as `libsmspp-lukfi-dev`, in vcpkg
+as `smspp[core,lukfi]`, and in the other channels that the [installation
+guide](https://gitlab.com/smspp/smspp-project/-/wikis/Installing-SMS++) of
+SMS++ lists. What follows is about building it yourself.
 
 ### Requirements
 

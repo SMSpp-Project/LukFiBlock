@@ -181,7 +181,7 @@ public:
  typedef std::vector< DblRow > DblMat;
 
 /*--------------------------------------------------------------------------*/
-/*------------------------- CLASS LukFiFunction -----------------------------*/
+/*------------------------- CLASS LukFiFunction ----------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------- GENERAL NOTES --------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -451,7 +451,7 @@ class LukFiFunction : public C05Function {
  int get_dflt_int_par( idx_type par ) const override;
 
 /** @} ---------------------------------------------------------------------*/
-/*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction ---------*/
+/*----- METHODS FOR HANDLING "ACTIVE" Variable IN THE LukFiFunction --------*/
 /*--------------------------------------------------------------------------*/
 /** @name Methods for handling the set of "active" Variable in the
  * LukFiFunction; this is the actual concrete implementation exploiting the
@@ -547,7 +547,7 @@ class LukFiFunction : public C05Function {
  const static std::map< std::string , idx_type > int_pars_map;
   ///< the (static const) map for int parameters names
 
-/**@} ----------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
 /*--------------------- PRIVATE PART OF THE CLASS --------------------------*/
 /*--------------------------------------------------------------------------*/
 
