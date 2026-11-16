@@ -392,7 +392,8 @@ void test_function( const Case & c )
 	std::to_string( blk->get_x().size() ) + " ColVariable instead of " +
 	std::to_string( c.n ) );
  check( int( blk->get_number_static_variables() ) == 1 ,
-	std::string( c.label ) + ": the ColVariable are not one static group" );
+	std::string( c.label ) +
+	": the ColVariable are not one static group" );
  check( int( f->get_num_active_var() ) == c.n , std::string( c.label ) +
 	": " + std::to_string( f->get_num_active_var() ) +
 	" active Variable instead of " + std::to_string( c.n ) );

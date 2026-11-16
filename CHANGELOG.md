@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-16
+
+
+### Fixed
+
+- the installed module `smspp.lukfiblock` could not be imported, since its
+  package gave the interface of the module the target of the library by its
+  name in the build tree, which an installed package does not have
+
 ## [0.6.0] - 2026-11-03
 
 ### Added
@@ -175,7 +184,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First test release.
 
-[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.6.0...develop
+[Unreleased]: https://gitlab.com/smspp/lukfiblock/-/compare/0.7.0...develop
+[0.7.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.6.0...0.7.0
 [0.6.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.5.0...0.6.0
 [0.5.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.4.0...0.5.0
 [0.4.0]: https://gitlab.com/smspp/lukfiblock/-/compare/0.3.2...0.4.0

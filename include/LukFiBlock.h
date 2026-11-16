@@ -288,7 +288,8 @@ class LukFiFunction : public C05Function {
    virtual bool operator==( const ThinVarDepInterface::v_const_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
+     auto tmp =
+       static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( itr_ == tmp->itr_ );
     #else
      auto tmp = dynamic_cast< const LukFiFunction::v_const_iterator * >( & rhs
@@ -299,10 +300,12 @@ class LukFiFunction : public C05Function {
    virtual bool operator!=( const ThinVarDepInterface::v_const_iterator & rhs )
     const override final {
     #ifdef NDEBUG
-     auto tmp = static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
+     auto tmp =
+       static_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( itr_ != tmp->itr_ );
     #else
-     auto tmp = dynamic_cast< const LukFiFunction::v_const_iterator * >( & rhs );
+     auto tmp =
+       dynamic_cast< const LukFiFunction::v_const_iterator * >( & rhs );
      return( tmp ? itr_ != tmp->itr_ : false );
     #endif
     }
