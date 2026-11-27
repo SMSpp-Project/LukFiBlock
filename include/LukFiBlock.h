@@ -55,7 +55,7 @@ namespace SMSpp_di_unipi_it
     functions. For a detailed description we refer to the paper
     "Piecewise-quadratic approximations in convex numerical optimization"
      Siam Journal on Optimization. 21(4):1418-1438
-    by A. Astorino, F. Frangioni, M. Gaudioso and E. Gorgone
+    by A. Astorino, A. Frangioni, M. Gaudioso and E. Gorgone
 
   1. Rosenbrock  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - nonconvex
